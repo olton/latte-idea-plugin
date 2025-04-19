@@ -15,9 +15,6 @@
   <!-- Extension points defined by the plugin.
        Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
   <extensions defaultExtensionNs="com.intellij">
-    <applicationConfigurable parentId="tools" instance="org.intellij.sdk.settings.AppSettingsConfigurable"
-                             id="org.intellij.sdk.settings.AppSettingsConfigurable"
-                             displayName="message.key.latte.settings.display.name"/>
-    <applicationService serviceImplementation="org.intellij.sdk.settings.AppSettings"/>
+    <configurationType implementation="ua.com.pimenov.latte.runs.all.AllConfigurationType"/>
   </extensions>
 </idea-plugin>
