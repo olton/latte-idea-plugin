@@ -1,0 +1,23 @@
+<idea-plugin>
+  <id>ua.com.pimenov.latte</id>
+  <name>Latte Testing Framework</name>
+  <vendor url="https://pimenov.com.ua">Serhii Pimenov</vendor>
+  <description><![CDATA[
+    Plugin for the Latte test framework.
+    It supports testing for JavaScript, TypeScript, HTML elements (DOM enabled), React Components, and entire web pages with a built-in headless browser.
+  ]]></description>
+
+  <!-- Product and plugin compatibility requirements.
+       Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+  <depends>com.intellij.modules.platform</depends>
+  <depends>JavaScript</depends>
+
+  <!-- Extension points defined by the plugin.
+       Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+  <extensions defaultExtensionNs="com.intellij">
+    <applicationConfigurable parentId="tools" instance="org.intellij.sdk.settings.AppSettingsConfigurable"
+                             id="org.intellij.sdk.settings.AppSettingsConfigurable"
+                             displayName="message.key.latte.settings.display.name"/>
+    <applicationService serviceImplementation="org.intellij.sdk.settings.AppSettings"/>
+  </extensions>
+</idea-plugin>
