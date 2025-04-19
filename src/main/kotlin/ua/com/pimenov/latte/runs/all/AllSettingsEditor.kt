@@ -19,6 +19,7 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JRadioButton
 import javax.swing.JSeparator
+import javax.swing.JTextField
 
 class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunConfiguration?>() {
     private val topPanel: JPanel
@@ -46,17 +47,15 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
     private val scopeDirectory = TextFieldWithBrowseButton()
     private val scopeFile = TextFieldWithBrowseButton()
     private val scopeSuiteFile = TextFieldWithBrowseButton()
-    private val scopeSuiteName = TextFieldWithBrowseButton()
+    private val scopeSuiteName = JTextField()
     private val scopeTestFile = TextFieldWithBrowseButton()
-    private val scopeTestName = TextFieldWithBrowseButton()
+    private val scopeTestName = JTextField()
 
     private val scopeAllPanel: JPanel
     private val scopeDirectoryPanel: JPanel
     private val scopeFilePanel: JPanel
     private val scopeSuitePanel: JPanel
     private val scopeTestPanel: JPanel
-
-    private val allowedExtensions = arrayOf("js", "ts", "jsx", "tsx")
 
     init {
         val folderDescriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
