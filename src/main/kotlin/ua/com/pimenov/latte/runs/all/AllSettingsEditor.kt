@@ -5,7 +5,6 @@ import com.intellij.javascript.nodejs.interpreter.NodeJsInterpreterField
 import com.intellij.javascript.nodejs.interpreter.NodeJsInterpreterRef
 import com.intellij.javascript.nodejs.util.NodePackage
 import com.intellij.javascript.nodejs.util.NodePackageField
-import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
@@ -20,6 +19,22 @@ import javax.swing.JPanel
 import javax.swing.JRadioButton
 import javax.swing.JSeparator
 import javax.swing.JTextField
+import ua.com.pimenov.latte.Latte
+import ua.com.pimenov.latte.utils.setPlaceholder
+
+enum class ScopeType(val id: String) {
+    ALL("all"),
+    DIRECTORY("dir"),
+    FILE("file"),
+    SUITE("suite"),
+    TEST("test");
+
+    companion object {
+        fun fromString(value: String?): ScopeType {
+            return entries.find { it.id == value } ?: ALL
+        }
+    }
+}
 
 class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunConfiguration?>() {
     private val topPanel: JPanel
@@ -37,12 +52,13 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
     private val scopeTypePanel: JPanel
     private val scopeDetailsPanel: JPanel
 
-    private var selectedScope: String = "all"
-    private val radioAllTests = JRadioButton("All tests")
-    private val radioDirectory = JRadioButton("Directory")
-    private val radioFile = JRadioButton("Test File")
-    private val radioSuite = JRadioButton("Suite")
-    private val radioTest = JRadioButton("Test")
+    private var selectedScope = ScopeType.ALL
+
+    private val radioAllTests = JRadioButton(Latte.message("latte.settings.scope.all"))
+    private val radioDirectory = JRadioButton(Latte.message("latte.settings.scope.directory"))
+    private val radioFile = JRadioButton(Latte.message("latte.settings.scope.file"))
+    private val radioSuite = JRadioButton(Latte.message("latte.settings.scope.suite"))
+    private val radioTest = JRadioButton(Latte.message("latte.settings.scope.test"))
 
     private val scopeDirectory = TextFieldWithBrowseButton()
     private val scopeFile = TextFieldWithBrowseButton()
@@ -62,6 +78,16 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
         val fileDescriptorConf = FileChooserDescriptorFactory.createSingleFileDescriptor("json")
         val fileDescriptorTest = FileChooserDescriptorFactory.singleFile().withExtensionFilter("Select test file...", "js", "ts", "jsx", "tsx")
 
+        setPlaceholder(workingDirectory.textField, Latte.message("latte.settings.working.directory.placeholder"))
+        setPlaceholder(scopeDirectory.textField, Latte.message("latte.settings.scope.directory.placeholder"))
+        setPlaceholder(latteOptions.textField, Latte.message("latte.settings.latte.options.placeholder"))
+        setPlaceholder(nodeOptions.textField, Latte.message("latte.settings.node.options.placeholder"))
+        setPlaceholder(scopeSuiteName, Latte.message("latte.settings.scope.suite.name.placeholder"))
+        setPlaceholder(scopeSuiteFile.textField, Latte.message("latte.settings.scope.suite.file.placeholder"))
+        setPlaceholder(scopeTestName, Latte.message("latte.settings.scope.test.name.placeholder"))
+        setPlaceholder(scopeTestFile.textField, Latte.message("latte.settings.scope.test.file.placeholder"))
+        setPlaceholder(scopeFile.textField, Latte.message("latte.settings.scope.test.file.placeholder"))
+
         configFile.addBrowseFolderListener(
             project,
             fileDescriptorConf
@@ -72,10 +98,12 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
             folderDescriptor
         )
 
+
         scopeDirectory.addBrowseFolderListener(
             project,
             folderDescriptor
         )
+
 
         scopeFile.addBrowseFolderListener(
             project,
@@ -93,76 +121,41 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
         )
 
         actionPanel = FormBuilder.createFormBuilder()
-            .addLabeledComponent("Node interpreter:", nodeInterpreter)
-            .addLabeledComponent("Node options:", nodeOptions)
-            .addLabeledComponent("Latte path:", lattePath)
-            .addLabeledComponent("Working directory:", workingDirectory)
-            .addLabeledComponent("Latte options:", latteOptions)
-            .addLabeledComponent("Environment variables:", envVariables)
+            .addLabeledComponent(Latte.message("latte.settings.node.interpreter"), nodeInterpreter)
+            .addLabeledComponent(Latte.message("latte.settings.node.options"), nodeOptions)
+            .addLabeledComponent(Latte.message("latte.settings.latte.path"), lattePath)
+            .addLabeledComponent(Latte.message("latte.settings.working.directory"), workingDirectory)
+            .addLabeledComponent(Latte.message("latte.settings.latte.options"), latteOptions)
+            .addLabeledComponent(Latte.message("latte.settings.env.variables"), envVariables)
             .addComponent(JSeparator())
             .getPanel()
 
-        radioAllTests.toolTipText = "Run all tests"
+        radioAllTests.toolTipText = Latte.message("latte.settings.scope.all.tooltip")
         radioAllTests.setMnemonic('l')
         radioAllTests.setSelected(true)
-        radioAllTests.actionCommand = "all"
+        radioAllTests.actionCommand = ScopeType.ALL.id
 
-        radioDirectory.toolTipText = "Run all tests in directory"
+        radioDirectory.toolTipText = Latte.message("latte.settings.scope.directory.tooltip")
         radioDirectory.setMnemonic('D')
-        radioDirectory.actionCommand = "dir"
+        radioDirectory.actionCommand = ScopeType.DIRECTORY.id
 
-        radioFile.toolTipText = "Run single test file"
+        radioFile.toolTipText = Latte.message("latte.settings.scope.file.tooltip")
         radioFile.setMnemonic('F')
-        radioFile.actionCommand = "file"
+        radioFile.actionCommand = ScopeType.FILE.id
 
-        radioSuite.toolTipText = "Run all tests in suite"
+        radioSuite.toolTipText = Latte.message("latte.settings.scope.suite.tooltip")
         radioSuite.setMnemonic('e')
-        radioSuite.actionCommand = "suite"
+        radioSuite.actionCommand = ScopeType.SUITE.id
 
-        radioTest.toolTipText = "Run single test"
+        radioTest.toolTipText = Latte.message("latte.settings.scope.test.tooltip")
         radioTest.setMnemonic('T')
-        radioTest.actionCommand = "test"
+        radioTest.actionCommand = ScopeType.TEST.id
 
-        radioAllTests.addActionListener {
-            selectedScope = "all"
-            scopeAllPanel.setVisible(true)
-            scopeDirectoryPanel.setVisible(false)
-            scopeFilePanel.setVisible(false)
-            scopeSuitePanel.setVisible(false)
-            scopeTestPanel.setVisible(false)
-        }
-        radioDirectory.addActionListener {
-            selectedScope = "dir"
-            scopeAllPanel.setVisible(false)
-            scopeDirectoryPanel.setVisible(true)
-            scopeFilePanel.setVisible(false)
-            scopeSuitePanel.setVisible(false)
-            scopeTestPanel.setVisible(false)
-        }
-        radioFile.addActionListener {
-            selectedScope = "file"
-            scopeAllPanel.setVisible(false)
-            scopeDirectoryPanel.setVisible(false)
-            scopeFilePanel.setVisible(true)
-            scopeSuitePanel.setVisible(false)
-            scopeTestPanel.setVisible(false)
-        }
-        radioSuite.addActionListener {
-            selectedScope = "suite"
-            scopeAllPanel.setVisible(false)
-            scopeDirectoryPanel.setVisible(false)
-            scopeFilePanel.setVisible(false)
-            scopeSuitePanel.setVisible(true)
-            scopeTestPanel.setVisible(false)
-        }
-        radioTest.addActionListener {
-            selectedScope = "test"
-            scopeAllPanel.setVisible(false)
-            scopeDirectoryPanel.setVisible(false)
-            scopeFilePanel.setVisible(false)
-            scopeSuitePanel.setVisible(false)
-            scopeTestPanel.setVisible(true)
-        }
+        radioAllTests.addActionListener { updateScopeVisibility(ScopeType.ALL) }
+        radioDirectory.addActionListener { updateScopeVisibility(ScopeType.DIRECTORY) }
+        radioFile.addActionListener { updateScopeVisibility(ScopeType.FILE) }
+        radioSuite.addActionListener { updateScopeVisibility(ScopeType.SUITE) }
+        radioTest.addActionListener { updateScopeVisibility(ScopeType.TEST) }
 
         val group = ButtonGroup()
 
@@ -175,21 +168,21 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
         scopeAllPanel = FormBuilder.createFormBuilder().getPanel()
 
         scopeDirectoryPanel = FormBuilder.createFormBuilder()
-            .addLabeledComponent("Directory:", scopeDirectory)
+            .addLabeledComponent(Latte.message("latte.settings.scope.directory.label"), scopeDirectory)
             .getPanel()
 
         scopeFilePanel = FormBuilder.createFormBuilder()
-            .addLabeledComponent("Test file:", scopeFile)
+            .addLabeledComponent(Latte.message("latte.settings.scope.file.label"), scopeFile)
             .getPanel()
 
         scopeSuitePanel = FormBuilder.createFormBuilder()
-            .addLabeledComponent("Test file:", scopeSuiteFile)
-            .addLabeledComponent("Suite(s):", scopeSuiteName)
+            .addLabeledComponent(Latte.message("latte.settings.scope.file.label"), scopeSuiteFile)
+            .addLabeledComponent(Latte.message("latte.settings.scope.suite.name"), scopeSuiteName)
             .getPanel()
 
         scopeTestPanel = FormBuilder.createFormBuilder()
-            .addLabeledComponent("Test file:", scopeTestFile)
-            .addLabeledComponent("Test name:", scopeTestName)
+            .addLabeledComponent(Latte.message("latte.settings.scope.file.label"), scopeTestFile)
+            .addLabeledComponent(Latte.message("latte.settings.scope.test.name"), scopeTestName)
             .getPanel()
 
         scopeTypePanel = FormBuilder.createFormBuilder()
@@ -228,11 +221,21 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
             .getPanel()
 
         topPanel = FormBuilder.createFormBuilder()
-            .addLabeledComponent("Config file:", configFile)
+            .addLabeledComponent(Latte.message("latte.settings.config.file"), configFile)
             .addComponent(JSeparator())
             .addComponent(actionPanel)
             .addComponent(scopePanel)
             .getPanel()
+
+    }
+
+    private fun updateScopeVisibility(scope: ScopeType) {
+        selectedScope = scope
+        scopeAllPanel.isVisible = scope == ScopeType.ALL
+        scopeDirectoryPanel.isVisible = scope == ScopeType.DIRECTORY
+        scopeFilePanel.isVisible = scope == ScopeType.FILE
+        scopeSuitePanel.isVisible = scope == ScopeType.SUITE
+        scopeTestPanel.isVisible = scope == ScopeType.TEST
     }
 
     override fun resetEditorFrom(conf: AllRunConfiguration) {
@@ -243,14 +246,15 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
         workingDirectory.text = conf.workingDirectory ?: ""
         latteOptions.text = conf.latteOptions ?: ""
         envVariables.envs = conf.envVariables
-        selectedScope = conf.testScope ?: "all"
+        selectedScope = ScopeType.fromString(conf.testScope)
         when (selectedScope) {
-            "all" -> radioAllTests.isSelected = true
-            "dir" -> radioDirectory.isSelected = true
-            "file" -> radioFile.isSelected = true
-            "suite" -> radioSuite.isSelected = true
-            "test" -> radioTest.isSelected = true
+            ScopeType.ALL -> radioAllTests.isSelected = true
+            ScopeType.DIRECTORY -> radioDirectory.isSelected = true
+            ScopeType.FILE -> radioFile.isSelected = true
+            ScopeType.SUITE -> radioSuite.isSelected = true
+            ScopeType.TEST -> radioTest.isSelected = true
         }
+        updateScopeVisibility(selectedScope)
     }
 
     override fun applyEditorTo(@NotNull conf: AllRunConfiguration) {
@@ -261,7 +265,7 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
         conf.workingDirectory = workingDirectory.text
         conf.latteOptions = latteOptions.text
         conf.envVariables = envVariables.envs
-        conf.testScope = selectedScope
+        conf.testScope = selectedScope.id
     }
 
     @NotNull

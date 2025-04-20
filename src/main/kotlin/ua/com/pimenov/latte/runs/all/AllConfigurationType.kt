@@ -1,11 +1,13 @@
 package ua.com.pimenov.latte.runs.all
 
 import com.intellij.execution.configurations.ConfigurationTypeBase
-import com.intellij.icons.AllIcons
+import ua.com.pimenov.latte.utils.LatteIcons
 
 class AllConfigurationType: ConfigurationTypeBase(
-    ID, "Latte", "Run all tests",
-    AllIcons.RunConfigurations.TestCustom
+    ID,
+    "Latte",
+    "",
+    LatteIcons.LatteIcon
 ) {
     init {
         addFactory(createFactory())
