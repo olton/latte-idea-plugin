@@ -1,6 +1,7 @@
-package ua.com.pimenov.latte.runs.all
+package ua.com.pimenov.latte.runs
 
 import com.intellij.execution.configuration.EnvironmentVariablesTextFieldWithBrowseButton
+import com.intellij.icons.AllIcons
 import com.intellij.javascript.nodejs.interpreter.NodeJsInterpreterField
 import com.intellij.javascript.nodejs.interpreter.NodeJsInterpreterRef
 import com.intellij.javascript.nodejs.util.NodePackage
@@ -21,6 +22,12 @@ import javax.swing.JSeparator
 import javax.swing.JTextField
 import ua.com.pimenov.latte.Latte
 import ua.com.pimenov.latte.utils.setPlaceholder
+import java.awt.BorderLayout
+import java.awt.Cursor
+import javax.swing.JButton
+import java.awt.Dimension
+import com.intellij.ui.components.JBTextField
+
 
 enum class ScopeType(val id: String) {
     ALL("all"),
@@ -30,22 +37,27 @@ enum class ScopeType(val id: String) {
     TEST("test");
 
     companion object {
+        @OptIn(ExperimentalStdlibApi::class)
         fun fromString(value: String?): ScopeType {
             return entries.find { it.id == value } ?: ALL
         }
     }
 }
 
-class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunConfiguration?>() {
+class RunSettingsEditor(private val project: Project) : SettingsEditor<RunConfiguration>() {
     private val topPanel: JPanel
 
     private val configFile = TextFieldWithBrowseButton()
     private val actionPanel: JPanel
     private val nodeInterpreter = NodeJsInterpreterField(project, true, true)
-    private val nodeOptions = RawCommandLineEditor()
+    private val nodeOptions = JBTextField()
     private val lattePath = NodePackageField(project, "latte", null)
+
+    private val workingDirectoryPanel: JPanel
     private val workingDirectory = TextFieldWithBrowseButton()
-    private val latteOptions = RawCommandLineEditor()
+    private val setProjectDirButton = JButton(AllIcons.Actions.ProjectDirectory)
+
+    private val latteOptions = JBTextField()
     private val envVariables = EnvironmentVariablesTextFieldWithBrowseButton()
 
     private val scopePanel: JPanel
@@ -63,9 +75,9 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
     private val scopeDirectory = TextFieldWithBrowseButton()
     private val scopeFile = TextFieldWithBrowseButton()
     private val scopeSuiteFile = TextFieldWithBrowseButton()
-    private val scopeSuiteName = JTextField()
+    private val scopeSuiteName = JBTextField()
     private val scopeTestFile = TextFieldWithBrowseButton()
-    private val scopeTestName = JTextField()
+    private val scopeTestName = JBTextField()
 
     private val scopeAllPanel: JPanel
     private val scopeDirectoryPanel: JPanel
@@ -78,13 +90,17 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
         val fileDescriptorConf = FileChooserDescriptorFactory.createSingleFileDescriptor("json")
         val fileDescriptorTest = FileChooserDescriptorFactory.singleFile().withExtensionFilter("Select test file...", "js", "ts", "jsx", "tsx")
 
+
+        workingDirectory.text = project.basePath ?: ""
+        latteOptions.text = null
+        nodeOptions.emptyText.text = Latte.message("latte.settings.node.options.placeholder")
+        latteOptions.emptyText.text = Latte.message("latte.settings.latte.options.placeholder")
+        scopeSuiteName.emptyText.text = Latte.message("latte.settings.scope.suite.name.placeholder")
+        scopeTestName.emptyText.text = Latte.message("latte.settings.scope.test.name.placeholder")
+
         setPlaceholder(workingDirectory.textField, Latte.message("latte.settings.working.directory.placeholder"))
         setPlaceholder(scopeDirectory.textField, Latte.message("latte.settings.scope.directory.placeholder"))
-        setPlaceholder(latteOptions.textField, Latte.message("latte.settings.latte.options.placeholder"))
-        setPlaceholder(nodeOptions.textField, Latte.message("latte.settings.node.options.placeholder"))
-        setPlaceholder(scopeSuiteName, Latte.message("latte.settings.scope.suite.name.placeholder"))
         setPlaceholder(scopeSuiteFile.textField, Latte.message("latte.settings.scope.suite.file.placeholder"))
-        setPlaceholder(scopeTestName, Latte.message("latte.settings.scope.test.name.placeholder"))
         setPlaceholder(scopeTestFile.textField, Latte.message("latte.settings.scope.test.file.placeholder"))
         setPlaceholder(scopeFile.textField, Latte.message("latte.settings.scope.test.file.placeholder"))
 
@@ -98,12 +114,10 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
             folderDescriptor
         )
 
-
         scopeDirectory.addBrowseFolderListener(
             project,
             folderDescriptor
         )
-
 
         scopeFile.addBrowseFolderListener(
             project,
@@ -120,11 +134,19 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
             fileDescriptorTest
         )
 
+        workingDirectoryPanel = JPanel(BorderLayout())
+        workingDirectoryPanel.add(workingDirectory, BorderLayout.CENTER)
+        workingDirectoryPanel.add(setProjectDirButton, BorderLayout.EAST)
+        setProjectDirButton.addActionListener { workingDirectory.text = project.basePath ?: "" }
+        setProjectDirButton.toolTipText = Latte.message("latte.settings.working.directory.set.project.dir")
+        setProjectDirButton.preferredSize = Dimension(workingDirectory.preferredSize.height, workingDirectory.preferredSize.height)
+        setProjectDirButton.cursor = Cursor(Cursor.HAND_CURSOR)
+
         actionPanel = FormBuilder.createFormBuilder()
             .addLabeledComponent(Latte.message("latte.settings.node.interpreter"), nodeInterpreter)
             .addLabeledComponent(Latte.message("latte.settings.node.options"), nodeOptions)
             .addLabeledComponent(Latte.message("latte.settings.latte.path"), lattePath)
-            .addLabeledComponent(Latte.message("latte.settings.working.directory"), workingDirectory)
+            .addLabeledComponent(Latte.message("latte.settings.working.directory"), workingDirectoryPanel)
             .addLabeledComponent(Latte.message("latte.settings.latte.options"), latteOptions)
             .addLabeledComponent(Latte.message("latte.settings.env.variables"), envVariables)
             .addComponent(JSeparator())
@@ -197,7 +219,7 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
         val scopeTypePanelLayout = FlowLayout()
         scopeTypePanelLayout.alignment = FlowLayout.CENTER
         scopeTypePanelLayout.hgap = 40
-        scopeTypePanelLayout.vgap = 0
+        scopeTypePanelLayout.vgap = 10
 
         scopeTypePanel.layout = scopeTypePanelLayout
 
@@ -238,14 +260,15 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
         scopeTestPanel.isVisible = scope == ScopeType.TEST
     }
 
-    override fun resetEditorFrom(conf: AllRunConfiguration) {
+    override fun resetEditorFrom(conf: RunConfiguration) {
         configFile.text = conf.configFile ?: ""
-        nodeInterpreter.interpreterRef = NodeJsInterpreterRef.create(conf.nodeInterpreter ?: "")
-        nodeOptions.text = conf.nodeOptions ?: ""
-        lattePath.selected = NodePackage(conf.lattePath ?: "")
-        workingDirectory.text = conf.workingDirectory ?: ""
-        latteOptions.text = conf.latteOptions ?: ""
+        nodeInterpreter.interpreterRef = NodeJsInterpreterRef.create(conf.nodeInterpreter)
+        nodeOptions.text = conf.nodeOptions
+        lattePath.selected = NodePackage(conf.lattePath ?: (project.basePath + "/node_modules/@olton/latte"))
+        workingDirectory.text = conf.workingDirectory ?: project.basePath ?: ""
+        latteOptions.text = conf.latteOptions
         envVariables.envs = conf.envVariables
+
         selectedScope = ScopeType.fromString(conf.testScope)
         when (selectedScope) {
             ScopeType.ALL -> radioAllTests.isSelected = true
@@ -255,9 +278,16 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
             ScopeType.TEST -> radioTest.isSelected = true
         }
         updateScopeVisibility(selectedScope)
+
+        scopeDirectory.text = conf.testsDirectory ?: ""
+        scopeFile.text = conf.testsFile ?: ""
+        scopeSuiteFile.text = conf.suiteFile ?: ""
+        scopeSuiteName.text = conf.suiteName ?: ""
+        scopeTestFile.text = conf.testFile ?: ""
+        scopeTestName.text = conf.testName ?: ""
     }
 
-    override fun applyEditorTo(@NotNull conf: AllRunConfiguration) {
+    override fun applyEditorTo(@NotNull conf: RunConfiguration) {
         conf.configFile = configFile.text
         conf.nodeInterpreter = nodeInterpreter.interpreterRef.referenceName
         conf.nodeOptions = nodeOptions.text
@@ -266,6 +296,12 @@ class AllSettingsEditor(private val project: Project) : SettingsEditor<AllRunCon
         conf.latteOptions = latteOptions.text
         conf.envVariables = envVariables.envs
         conf.testScope = selectedScope.id
+        conf.testsDirectory = scopeDirectory.text
+        conf.testsFile = scopeFile.text
+        conf.suiteFile = scopeSuiteFile.text
+        conf.suiteName = scopeSuiteName.text
+        conf.testFile = scopeTestFile.text
+        conf.testName = scopeTestName.text
     }
 
     @NotNull

@@ -15,6 +15,6 @@
   <!-- Extension points defined by the plugin.
        Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
   <extensions defaultExtensionNs="com.intellij">
-    <configurationType implementation="ua.com.pimenov.latte.runs.all.AllConfigurationType"/>
+    <configurationType implementation="ua.com.pimenov.latte.runs.RunConfigurationType"/>
   </extensions>
 </idea-plugin>

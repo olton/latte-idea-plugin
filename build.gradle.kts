@@ -17,6 +17,7 @@ repositories {
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html
 dependencies {
+  implementation("com.beust:klaxon:5.5")
   intellijPlatform {
     webstorm("2025.1")
     bundledPlugin("JavaScript")

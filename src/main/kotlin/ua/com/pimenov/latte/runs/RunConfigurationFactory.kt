@@ -1,4 +1,4 @@
-package ua.com.pimenov.latte.runs.all
+package ua.com.pimenov.latte.runs
 
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.ConfigurationType
@@ -6,19 +6,18 @@ import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.openapi.components.BaseState
 import com.intellij.openapi.project.Project
 import org.jetbrains.annotations.NotNull
-import org.jetbrains.annotations.Nullable
 
-class AllConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(type) {
+class RunConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(type) {
 
     @NotNull
-    override fun getId(): String = AllConfigurationType.ID
+    override fun getId(): String = RunConfigurationType.ID
 
     @NotNull
     override fun createTemplateConfiguration(@NotNull project: Project): RunConfiguration {
-        return AllRunConfiguration(project, this, "Latte")
+        return RunConfiguration(project, this, "Latte")
     }
 
     override fun getOptionsClass(): Class<out BaseState> {
-        return AllConfigurationOptions::class.java
+        return RunConfigurationOptions::class.java
     }
 }

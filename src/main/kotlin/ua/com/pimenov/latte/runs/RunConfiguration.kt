@@ -1,22 +1,25 @@
-package ua.com.pimenov.latte.runs.all
+package ua.com.pimenov.latte.runs
 
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.*
+import com.intellij.execution.configurations.ConfigurationFactory
+import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessHandlerFactory
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
+import java.util.concurrent.ExecutionException
 
-class AllRunConfiguration(
+class RunConfiguration(
     project: Project,
     factory: ConfigurationFactory?,
     name: String?
-) : RunConfigurationBase<AllConfigurationOptions?>(project, factory, name) {
+) : RunConfigurationBase<RunConfigurationOptions?>(project, factory, name) {
 
-    override fun getOptions(): AllConfigurationOptions {
-        return super.getOptions() as AllConfigurationOptions
+    override fun getOptions(): RunConfigurationOptions {
+        return super.getOptions() as RunConfigurationOptions
     }
 
     var configFile: String?
@@ -44,7 +47,7 @@ class AllRunConfiguration(
         }
 
     var workingDirectory: String?
-        get() = options.workingDirectory
+        get() = options.workingDirectory ?: project.basePath ?: ""
         set(value) {
             options.workingDirectory = value ?: ""
         }
@@ -67,39 +70,51 @@ class AllRunConfiguration(
             options.testScope = value ?: ""
         }
 
-    var scopeDirectory: String?
-        get() = options.scopeDirectory
+    var testsDirectory: String?
+        get() = options.testsDirectory
         set(value) {
-            options.scopeDirectory = value ?: ""
+            options.testsDirectory = value ?: ""
         }
 
-    var scopeFile: String?
-        get() = options.scopeFile
+    var testsFile: String?
+        get() = options.testsFile
         set(value) {
-            options.scopeFile = value ?: ""
+            options.testsFile = value ?: ""
         }
 
-    var scopeSuite: String?
-        get() = options.scopeSuite
+    var suiteFile: String?
+        get() = options.suiteFile
         set(value) {
-            options.scopeSuite = value ?: ""
+            options.suiteFile = value ?: ""
         }
 
-    var scopeTest: String?
-        get() = options.scopeTest
+    var suiteName: String?
+        get() = options.suiteName
         set(value) {
-            options.scopeTest = value ?: ""
+            options.suiteName = value ?: ""
+        }
+
+    var testFile: String?
+        get() = options.testFile
+        set(value) {
+            options.testFile = value ?: ""
+        }
+
+    var testName: String?
+        get() = options.testName
+        set(value) {
+            options.testName = value ?: ""
         }
 
     override fun getConfigurationEditor(): SettingsEditor<out RunConfiguration> {
-        return AllSettingsEditor(project) as SettingsEditor<out RunConfiguration>
+        return RunSettingsEditor(project) as SettingsEditor<out RunConfiguration>
     }
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState? {
         return object : CommandLineState(environment) {
-//            @Throws(ExecutionException::class)
+            @Throws(ExecutionException::class)
             override fun startProcess(): ProcessHandler {
-                val commandLine = GeneralCommandLine("")
+                val commandLine = GeneralCommandLine()
                 val processHandler = ProcessHandlerFactory.getInstance()
                     .createColoredProcessHandler(commandLine)
                 ProcessTerminatedListener.attach(processHandler)
