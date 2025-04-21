@@ -14,7 +14,7 @@ class RunConfigurationFactory(type: ConfigurationType) : ConfigurationFactory(ty
 
     @NotNull
     override fun createTemplateConfiguration(@NotNull project: Project): RunConfiguration {
-        return RunConfiguration(project, this, "Latte")
+        return RunConfiguration(project, this, "Latte Testing")
     }
 
     override fun getOptionsClass(): Class<out BaseState> {

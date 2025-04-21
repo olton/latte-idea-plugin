@@ -5,8 +5,8 @@ import ua.com.pimenov.latte.utils.LatteIcons
 
 class RunConfigurationType: ConfigurationTypeBase(
     ID,
-    "Latte",
-    "Run all tests in project with latte",
+    "Latte Test Runner",
+    "Run tests with Latte",
     LatteIcons.LatteIcon
 ) {
     init {
@@ -18,7 +18,7 @@ class RunConfigurationType: ConfigurationTypeBase(
     }
 
     companion object {
-        const val ID: String = "RunConfigurationAll"
+        const val ID: String = "LatteRunConfiguration"
     }
 }
 

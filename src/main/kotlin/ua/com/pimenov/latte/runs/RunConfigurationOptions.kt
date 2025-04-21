@@ -23,8 +23,8 @@ class RunConfigurationOptions : RunConfigurationOptions() {
         get() = myConfigFile.getValue(this)
         set(value) = myConfigFile.setValue(this, value)
 
-    var nodeInterpreter: String?
-        get() = myNodeInterpreter.getValue(this)
+    var nodeInterpreter: String
+        get() = myNodeInterpreter.getValue(this) ?: ""
         set(value) = myNodeInterpreter.setValue(this, value)
 
     var nodeOptions: String?

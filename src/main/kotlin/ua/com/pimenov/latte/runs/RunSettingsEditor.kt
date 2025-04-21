@@ -11,6 +11,7 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.RawCommandLineEditor
+import com.intellij.ui.TextFieldWithHistoryWithBrowseButton
 import com.intellij.util.ui.FormBuilder
 import org.jetbrains.annotations.NotNull
 import java.awt.FlowLayout
@@ -47,14 +48,16 @@ enum class ScopeType(val id: String) {
 class RunSettingsEditor(private val project: Project) : SettingsEditor<RunConfiguration>() {
     private val topPanel: JPanel
 
-    private val configFile = TextFieldWithBrowseButton()
     private val actionPanel: JPanel
+    private val configFile: TextFieldWithBrowseButton
+    private val configFileEditor = JBTextField()
     private val nodeInterpreter = NodeJsInterpreterField(project, true, true)
     private val nodeOptions = JBTextField()
-    private val lattePath = NodePackageField(project, "latte", null)
+    private val lattePath: NodePackageField
 
     private val workingDirectoryPanel: JPanel
-    private val workingDirectory = TextFieldWithBrowseButton()
+    private val workingDirectory: TextFieldWithBrowseButton
+    private val workingDirectoryEditor = JBTextField()
     private val setProjectDirButton = JButton(AllIcons.Actions.ProjectDirectory)
 
     private val latteOptions = JBTextField()
@@ -72,7 +75,9 @@ class RunSettingsEditor(private val project: Project) : SettingsEditor<RunConfig
     private val radioSuite = JRadioButton(Latte.message("latte.settings.scope.suite"))
     private val radioTest = JRadioButton(Latte.message("latte.settings.scope.test"))
 
-    private val scopeDirectory = TextFieldWithBrowseButton()
+
+    private val scopeDirectory: TextFieldWithBrowseButton
+    private val scopeDirectoryEditor = JBTextField()
     private val scopeFile = TextFieldWithBrowseButton()
     private val scopeSuiteFile = TextFieldWithBrowseButton()
     private val scopeSuiteName = JBTextField()
@@ -85,35 +90,63 @@ class RunSettingsEditor(private val project: Project) : SettingsEditor<RunConfig
     private val scopeSuitePanel: JPanel
     private val scopeTestPanel: JPanel
 
+    private val folderDescriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
+    private val fileDescriptorConf = FileChooserDescriptorFactory.createSingleFileDescriptor("json")
+    private val fileDescriptorTest = FileChooserDescriptorFactory.singleFile().withExtensionFilter("Select test file...", "js", "ts", "jsx", "tsx")
+
     init {
-        val folderDescriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
-        val fileDescriptorConf = FileChooserDescriptorFactory.createSingleFileDescriptor("json")
-        val fileDescriptorTest = FileChooserDescriptorFactory.singleFile().withExtensionFilter("Select test file...", "js", "ts", "jsx", "tsx")
 
-
-        workingDirectory.text = project.basePath ?: ""
-        latteOptions.text = null
-        nodeOptions.emptyText.text = Latte.message("latte.settings.node.options.placeholder")
-        latteOptions.emptyText.text = Latte.message("latte.settings.latte.options.placeholder")
-        scopeSuiteName.emptyText.text = Latte.message("latte.settings.scope.suite.name.placeholder")
-        scopeTestName.emptyText.text = Latte.message("latte.settings.scope.test.name.placeholder")
-
-        setPlaceholder(workingDirectory.textField, Latte.message("latte.settings.working.directory.placeholder"))
-        setPlaceholder(scopeDirectory.textField, Latte.message("latte.settings.scope.directory.placeholder"))
-        setPlaceholder(scopeSuiteFile.textField, Latte.message("latte.settings.scope.suite.file.placeholder"))
-        setPlaceholder(scopeTestFile.textField, Latte.message("latte.settings.scope.test.file.placeholder"))
-        setPlaceholder(scopeFile.textField, Latte.message("latte.settings.scope.test.file.placeholder"))
-
+        // Latte Config file
+        configFileEditor.emptyText.text = Latte.message("latte.settings.config.file.placeholder")
+        configFile = TextFieldWithBrowseButton( configFileEditor )
         configFile.addBrowseFolderListener(
             project,
             fileDescriptorConf
         )
 
+        // Node options
+        nodeOptions.emptyText.text = Latte.message("latte.settings.node.options.placeholder")
+
+        // Working directory
+        workingDirectoryEditor.emptyText.text = Latte.message("latte.settings.working.directory.placeholder")
+        workingDirectory = TextFieldWithBrowseButton(workingDirectoryEditor)
+        workingDirectoryPanel = JPanel(BorderLayout())
+        workingDirectoryPanel.add(workingDirectory, BorderLayout.CENTER)
+        workingDirectoryPanel.add(setProjectDirButton, BorderLayout.EAST)
+        setProjectDirButton.addActionListener { workingDirectory.text = project.basePath ?: "" }
+        setProjectDirButton.toolTipText = Latte.message("latte.settings.working.directory.set.project.dir")
+        setProjectDirButton.preferredSize = Dimension(workingDirectory.preferredSize.height, workingDirectory.preferredSize.height)
+        setProjectDirButton.cursor = Cursor(Cursor.HAND_CURSOR)
+        workingDirectory.text = project.basePath ?: ""
         workingDirectory.addBrowseFolderListener(
             project,
             folderDescriptor
         )
 
+        // Latte options
+        lattePath = NodePackageField(project, "latte", null)
+        latteOptions.text = null
+        latteOptions.emptyText.text = Latte.message("latte.settings.latte.options.placeholder")
+
+        actionPanel = FormBuilder.createFormBuilder()
+            .addLabeledComponent(Latte.message("latte.settings.config.file"), configFile)
+            .addComponent(JSeparator())
+            .addLabeledComponent(Latte.message("latte.settings.node.interpreter"), nodeInterpreter)
+            .addLabeledComponent(Latte.message("latte.settings.node.options"), nodeOptions)
+            .addLabeledComponent(Latte.message("latte.settings.working.directory"), workingDirectoryPanel)
+            .addLabeledComponent(Latte.message("latte.settings.latte.path"), lattePath)
+            .addLabeledComponent(Latte.message("latte.settings.latte.options"), latteOptions)
+            .addLabeledComponent(Latte.message("latte.settings.env.variables"), envVariables)
+            .addComponent(JSeparator())
+            .getPanel()
+
+
+        // Tests Scope
+        scopeSuiteName.emptyText.text = Latte.message("latte.settings.scope.suite.name.placeholder")
+        scopeTestName.emptyText.text = Latte.message("latte.settings.scope.test.name.placeholder")
+
+        scopeDirectoryEditor.emptyText.text = Latte.message("latte.settings.scope.directory.placeholder")
+        scopeDirectory = TextFieldWithBrowseButton(scopeDirectoryEditor)
         scopeDirectory.addBrowseFolderListener(
             project,
             folderDescriptor
@@ -123,34 +156,19 @@ class RunSettingsEditor(private val project: Project) : SettingsEditor<RunConfig
             project,
             fileDescriptorTest
         )
+        setPlaceholder(scopeFile, Latte.message("latte.settings.scope.test.file.placeholder"))
 
         scopeSuiteFile.addBrowseFolderListener(
             project,
             fileDescriptorTest
         )
+        setPlaceholder(scopeSuiteFile, Latte.message("latte.settings.scope.suite.file.placeholder"))
 
         scopeTestFile.addBrowseFolderListener(
             project,
             fileDescriptorTest
         )
-
-        workingDirectoryPanel = JPanel(BorderLayout())
-        workingDirectoryPanel.add(workingDirectory, BorderLayout.CENTER)
-        workingDirectoryPanel.add(setProjectDirButton, BorderLayout.EAST)
-        setProjectDirButton.addActionListener { workingDirectory.text = project.basePath ?: "" }
-        setProjectDirButton.toolTipText = Latte.message("latte.settings.working.directory.set.project.dir")
-        setProjectDirButton.preferredSize = Dimension(workingDirectory.preferredSize.height, workingDirectory.preferredSize.height)
-        setProjectDirButton.cursor = Cursor(Cursor.HAND_CURSOR)
-
-        actionPanel = FormBuilder.createFormBuilder()
-            .addLabeledComponent(Latte.message("latte.settings.node.interpreter"), nodeInterpreter)
-            .addLabeledComponent(Latte.message("latte.settings.node.options"), nodeOptions)
-            .addLabeledComponent(Latte.message("latte.settings.latte.path"), lattePath)
-            .addLabeledComponent(Latte.message("latte.settings.working.directory"), workingDirectoryPanel)
-            .addLabeledComponent(Latte.message("latte.settings.latte.options"), latteOptions)
-            .addLabeledComponent(Latte.message("latte.settings.env.variables"), envVariables)
-            .addComponent(JSeparator())
-            .getPanel()
+        setPlaceholder(scopeTestFile, Latte.message("latte.settings.scope.test.file.placeholder"))
 
         radioAllTests.toolTipText = Latte.message("latte.settings.scope.all.tooltip")
         radioAllTests.setMnemonic('l')
@@ -243,8 +261,6 @@ class RunSettingsEditor(private val project: Project) : SettingsEditor<RunConfig
             .getPanel()
 
         topPanel = FormBuilder.createFormBuilder()
-            .addLabeledComponent(Latte.message("latte.settings.config.file"), configFile)
-            .addComponent(JSeparator())
             .addComponent(actionPanel)
             .addComponent(scopePanel)
             .getPanel()
@@ -289,7 +305,7 @@ class RunSettingsEditor(private val project: Project) : SettingsEditor<RunConfig
 
     override fun applyEditorTo(@NotNull conf: RunConfiguration) {
         conf.configFile = configFile.text
-        conf.nodeInterpreter = nodeInterpreter.interpreterRef.referenceName
+        conf.nodeInterpreter = nodeInterpreter.interpreter?.referenceName
         conf.nodeOptions = nodeOptions.text
         conf.lattePath = lattePath.selected.systemIndependentPath
         conf.workingDirectory = workingDirectory.text
