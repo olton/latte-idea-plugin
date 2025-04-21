@@ -174,15 +174,15 @@ class RunConfiguration(
 //        if (latteConfig.coverage) {latteConfigString += "--coverage"}
 
 
-        latteConfig?.maxWorkers?.let { if (latteConfig.parallel && it > 0) {latteConfigString += "--max-workers=${latteConfig.maxWorkers}"} }
-        latteConfig?.progress?.isEmpty()?.let { if (!it) {latteConfigString += "--progress='${latteConfig.progress}'"} }
-        latteConfig?.reportType?.isEmpty()?.let { if (!it) {latteConfigString += "--report-type='${latteConfig.reportType}'"} }
-        latteConfig?.reportDir?.isEmpty()?.let { if (!it) {latteConfigString += "--report-dir='${latteConfig.reportDir}'"} }
-        latteConfig?.reportFile?.isEmpty()?.let { if (!it) {latteConfigString += "--report-file='${latteConfig.reportFile}'"} }
-        latteConfig?.include?.isEmpty()?.let { if (!it) {latteConfigString += "--include='${latteConfig.include}'"} }
-        latteConfig?.exclude?.isEmpty()?.let { if (!it) {latteConfigString += "--exclude='${latteConfig.exclude}'"} }
-        latteConfig?.test?.isEmpty()?.let { if (!it) {latteConfigString += "--test='${latteConfig.test}'"} }
-        latteConfig?.suite?.isEmpty()?.let { if (!it) {latteConfigString += "--suite='${latteConfig.suite}'"} }
+        latteConfig.maxWorkers.let { if (latteConfig.parallel && it > 0) {latteConfigString += "--max-workers=${latteConfig.maxWorkers}"} }
+        latteConfig.progress.isEmpty().let { if (!it) {latteConfigString += "--progress='${latteConfig.progress}'"} }
+        latteConfig.reportType.isEmpty().let { if (!it) {latteConfigString += "--report-type='${latteConfig.reportType}'"} }
+        latteConfig.reportDir.isEmpty().let { if (!it) {latteConfigString += "--report-dir='${latteConfig.reportDir}'"} }
+        latteConfig.reportFile.isEmpty().let { if (!it) {latteConfigString += "--report-file='${latteConfig.reportFile}'"} }
+        latteConfig.include.isEmpty().let { if (!it) {latteConfigString += "--include='${latteConfig.include}'"} }
+        latteConfig.exclude.isEmpty().let { if (!it) {latteConfigString += "--exclude='${latteConfig.exclude}'"} }
+        latteConfig.test.isEmpty().let { if (!it) {latteConfigString += "--test='${latteConfig.test}'"} }
+        latteConfig.suite.isEmpty().let { if (!it) {latteConfigString += "--suite='${latteConfig.suite}'"} }
 
         return latteConfigString
     }
@@ -199,7 +199,7 @@ class RunConfiguration(
                 val commandLine = GeneralCommandLine()
                 commandLine.exePath = nodeExecutable
 
-                // Додавання параметрів Node.js
+                // Node.js options
                 if (!nodeOptions.isNullOrEmpty()) {
                     nodeOptions!!.trim().split(" ").forEach { option ->
                         if (option.isNotEmpty()) {
@@ -208,10 +208,10 @@ class RunConfiguration(
                     }
                 }
 
-                // Додавання шляху до скрипта latte.js
+                // Add latte executable
                 commandLine.addParameter(latte)
 
-                // Додавання параметрів для latte
+                // Add latte options
                 latteConfig?.forEach { param ->
                     commandLine.addParameter(param)
                 }
@@ -219,7 +219,7 @@ class RunConfiguration(
                 commandLine.charset = Charset.forName("UTF-8")
                 commandLine.setWorkDirectory(workingDirectory ?: project.basePath ?: "")
 
-                // Додавання змінних середовища
+                // Add environment variables
                 if (envVariables.isNotEmpty()) {
                     commandLine.withEnvironment(envVariables)
                 }
