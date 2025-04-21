@@ -24,10 +24,6 @@ class LatteConfig {
     var clear: Boolean = true
     var idea: Boolean = true
 
-    companion object {
-        const val CONFIG_FILE_NAME = "latte.json"
-    }
-
     operator fun set(key: String, value: Any?) {
         when (key) {
             "verbose" -> verbose = (value as? Boolean) ?: verbose

@@ -1,6 +1,5 @@
 package ua.com.pimenov.latte.runs
 
-import com.beust.klaxon.Klaxon
 import com.beust.klaxon.Parser
 import com.beust.klaxon.JsonObject
 import com.intellij.execution.Executor
@@ -120,7 +119,7 @@ class RunConfiguration(
 
     private fun getLatteConfig(): Array<String>? {
         var configFileContent: String
-        var latteConfig: LatteConfig = LatteConfig()
+        val latteConfig = LatteConfig()
 
         if (configFile != null && File(configFile!!).exists()) {
             configFileContent = File(configFile!!).readText()
@@ -163,16 +162,16 @@ class RunConfiguration(
         latteConfigString += "--idea"
         latteConfigString += "--skipConfigFile"
 
-        if (latteConfig?.dom == true) {latteConfigString += "--dom"}
-        if (latteConfig?.react == true) {latteConfigString += "--react"}
-        if (latteConfig?.verbose == true) {latteConfigString += "--verbose"}
-//        if (latteConfig?.watch == true) {latteConfigString += "--watch"}
-//        if (latteConfig?.parallel == true) {latteConfigString += "--parallel"}
-        if (latteConfig?.debug == true) {latteConfigString += "--debug"}
-//        if (latteConfig?.coverage == true) {latteConfigString += "--coverage"}
-        if (latteConfig?.loader == true) {latteConfigString += "--loader"}
-        if (latteConfig?.ts == true) {latteConfigString += "--ts"}
-        if (latteConfig?.clear == true) {latteConfigString += "--clear"}
+        if (latteConfig.dom) {latteConfigString += "--dom"}
+        if (latteConfig.react) {latteConfigString += "--react"}
+        if (latteConfig.verbose) {latteConfigString += "--verbose"}
+        if (latteConfig.debug) {latteConfigString += "--debug"}
+        if (latteConfig.loader) {latteConfigString += "--loader"}
+        if (latteConfig.ts) {latteConfigString += "--ts"}
+        if (latteConfig.clear) {latteConfigString += "--clear"}
+//        if (latteConfig.watch) {latteConfigString += "--watch"}
+//        if (latteConfig.parallel) {latteConfigString += "--parallel"}
+//        if (latteConfig.coverage) {latteConfigString += "--coverage"}
 
 
         latteConfig?.maxWorkers?.let { if (latteConfig.parallel && it > 0) {latteConfigString += "--max-workers=${latteConfig.maxWorkers}"} }
