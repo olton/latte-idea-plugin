@@ -1,6 +1,8 @@
 package ua.com.pimenov.latte.runs
 
 import com.beust.klaxon.Klaxon
+import com.beust.klaxon.Parser
+import com.beust.klaxon.JsonObject
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.*
 import com.intellij.execution.configurations.ConfigurationFactory
@@ -118,37 +120,40 @@ class RunConfiguration(
 
     private fun getLatteConfig(): Array<String>? {
         var configFileContent: String
-        var latteConfig: LatteConfig?
+        var latteConfig: LatteConfig = LatteConfig()
+
         if (configFile != null && File(configFile!!).exists()) {
             configFileContent = File(configFile!!).readText()
-            latteConfig = Klaxon().parse<LatteConfig>(configFileContent) as Nothing?
-        } else {
-            latteConfig = LatteConfig()
+            val sb: StringBuilder = StringBuilder(configFileContent)
+            val json: JsonObject = Parser.default().parse(sb) as JsonObject
+            json.entries.forEach {
+                latteConfig[it.key] = it.value
+            }
         }
 
         if (latteOptions != null && latteOptions!!.isNotEmpty()) {
             val parsedArgs = parseArgs(latteOptions!!)
             parsedArgs.forEach { (name, value) ->
                 when (name) {
-                    "--dom", "-d" -> {latteConfig?.dom = true}
-                    "--react", "-r" -> {latteConfig?.react = true}
-                    "--verbose", "-v" -> {latteConfig?.verbose = true}
-                    "--watch", "-w" -> {latteConfig?.watch = true}
-                    "--parallel", "-p" -> {latteConfig?.parallel = true}
-                    "--debug", "-g" -> {latteConfig?.debug = true}
-                    "--coverage", "-c" -> {latteConfig?.coverage = true}
-                    "--loader", "-l" -> {latteConfig?.loader = true}
-                    "--ts", "-t" -> {latteConfig?.ts = true}
-                    "--max-workers" -> {latteConfig?.maxWorkers = value?.toInt()!!}
-                    "--progress" -> {latteConfig?.progress = value!!}
-                    "--report-type" -> {latteConfig?.reportType = value!!}
-                    "--report-dir" -> {latteConfig?.reportDir = value!!}
-                    "--report-file" -> {latteConfig?.reportFile = value!!}
-                    "--include" -> {latteConfig?.include = value!!}
-                    "--exclude" -> {latteConfig?.exclude = value!!}
-                    "--test" -> {latteConfig?.test = value!!}
-                    "--suite" -> {latteConfig?.suite = value!!}
-                    "--clear" -> {latteConfig?.clear = true}
+                    "--dom", "-d" -> { latteConfig.dom = true }
+                    "--react", "-r" -> { latteConfig.react = true }
+                    "--verbose", "-v" -> { latteConfig.verbose = true }
+                    "--watch", "-w" -> { latteConfig.watch = true }
+                    "--parallel", "-p" -> { latteConfig.parallel = true }
+                    "--debug", "-g" -> { latteConfig.debug = true }
+                    "--coverage", "-c" -> { latteConfig.coverage = true }
+                    "--loader", "-l" -> { latteConfig.loader = true }
+                    "--ts", "-t" -> { latteConfig.ts = true }
+                    "--max-workers" -> { latteConfig.maxWorkers = value?.toInt()!! }
+                    "--progress" -> { latteConfig.progress = value!! }
+                    "--report-type" -> { latteConfig.reportType = value!! }
+                    "--report-dir" -> { latteConfig.reportDir = value!! }
+                    "--report-file" -> { latteConfig.reportFile = value!! }
+                    "--include" -> { latteConfig.include = value!! }
+                    "--exclude" -> { latteConfig.exclude = value!! }
+                    "--test" -> { latteConfig.test = value!! }
+                    "--suite" -> { latteConfig.suite = value!! }
+                    "--clear" -> { latteConfig.clear = true }
                 }
             }
         }

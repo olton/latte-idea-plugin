@@ -20,11 +20,38 @@ class LatteConfig {
     var reportDir: String = "coverage"
     var reportFile: String = ""
     var maxWorkers: Int = 4
-    var progress: String = "dots"
+    var progress: String = "default"
     var clear: Boolean = true
     var idea: Boolean = true
 
     companion object {
         const val CONFIG_FILE_NAME = "latte.json"
+    }
+
+    operator fun set(key: String, value: Any?) {
+        when (key) {
+            "verbose" -> verbose = (value as? Boolean) ?: verbose
+            "dom" -> dom = (value as? Boolean) ?: dom
+            "react" -> react = (value as? Boolean) ?: react
+            "coverage" -> coverage = (value as? Boolean) ?: coverage
+            "skipPassed" -> skipPassed = (value as? Boolean) ?: skipPassed
+            "parallel" -> parallel = (value as? Boolean) ?: parallel
+            "watch" -> watch = (value as? Boolean) ?: watch
+            "debug" -> debug = (value as? Boolean) ?: debug
+            "loader" -> loader = (value as? Boolean) ?: loader
+            "ts" -> ts = (value as? Boolean) ?: ts
+            "include" -> include = (value as? String) ?: include
+            "exclude" -> exclude = (value as? String) ?: exclude
+            "skip" -> skip = (value as? String) ?: skip
+            "test" -> test = (value as? String) ?: test
+            "suite" -> suite = (value as? String) ?: suite
+            "reportType" -> reportType = (value as? String) ?: reportType
+            "reportDir" -> reportDir = (value as? String) ?: reportDir
+            "reportFile" -> reportFile = (value as? String) ?: reportFile
+            "maxWorkers" -> maxWorkers = (value as? Int) ?: maxWorkers
+            "progress" -> progress = (value as? String) ?: progress
+            "clear" -> clear = (value as? Boolean) ?: clear
+            "idea" -> idea = (value as? Boolean) ?: idea
+        }
     }
 }
