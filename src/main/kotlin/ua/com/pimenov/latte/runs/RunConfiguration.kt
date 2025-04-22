@@ -161,7 +161,6 @@ class RunConfiguration(
 
         latteConfigString += "--idea"
         latteConfigString += "--skipConfigFile"
-//        latteConfigString += "--progress=none"
 
         if (latteConfig.dom) {latteConfigString += "--dom"}
         if (latteConfig.react) {latteConfigString += "--react"}
@@ -178,11 +177,22 @@ class RunConfiguration(
         latteConfig.reportType.isEmpty().let { if (!it) {latteConfigString += "--report-type='${latteConfig.reportType}'"} }
         latteConfig.reportDir.isEmpty().let { if (!it) {latteConfigString += "--report-dir='${latteConfig.reportDir}'"} }
         latteConfig.reportFile.isEmpty().let { if (!it) {latteConfigString += "--report-file='${latteConfig.reportFile}'"} }
-        latteConfig.include.isEmpty().let { if (!it) {latteConfigString += "--include='${latteConfig.include}'"} }
         latteConfig.exclude.isEmpty().let { if (!it) {latteConfigString += "--exclude='${latteConfig.exclude}'"} }
         latteConfig.test.isEmpty().let { if (!it) {latteConfigString += "--test='${latteConfig.test}'"} }
         latteConfig.suite.isEmpty().let { if (!it) {latteConfigString += "--suite='${latteConfig.suite}'"} }
         latteConfig.progress.isEmpty().let { if (!it) {latteConfigString += "--progress='${latteConfig.progress}'"} }
+
+        val scope = when (testScope) {
+            ScopeType.DIRECTORY.id -> { arrayOf("--include='$testsDirectory/**/*.{test,spec}.{js,ts,jsx,tsx}'") }
+            ScopeType.FILE.id      -> { arrayOf("--include='$testsFile'") }
+            ScopeType.SUITE.id     -> { arrayOf("--include='$suiteFile'", "--suite='$suiteName'") }
+            ScopeType.TEST.id      -> { arrayOf("--include='$testFile'", "--test='$testName'") }
+            else                   -> { arrayOf("--include='${latteConfig.include}'") }
+        }
+
+        scope.forEach {
+            latteConfigString += it
+        }
 
         return latteConfigString
     }

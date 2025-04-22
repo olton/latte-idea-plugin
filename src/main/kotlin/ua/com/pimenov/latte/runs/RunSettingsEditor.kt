@@ -78,10 +78,16 @@ class RunSettingsEditor(private val project: Project) : SettingsEditor<RunConfig
 
     private val scopeDirectory: TextFieldWithBrowseButton
     private val scopeDirectoryEditor = JBTextField()
-    private val scopeFile = TextFieldWithBrowseButton()
-    private val scopeSuiteFile = TextFieldWithBrowseButton()
+
+    private val scopeFile: TextFieldWithBrowseButton
+    private val scopeFileEditor = JBTextField()
+
+    private val scopeSuiteFile: TextFieldWithBrowseButton
+    private val scopeSuiteFileEditor = JBTextField()
     private val scopeSuiteName = JBTextField()
-    private val scopeTestFile = TextFieldWithBrowseButton()
+
+    private val scopeTestFile: TextFieldWithBrowseButton
+    private val scopeTestFileEditor = JBTextField()
     private val scopeTestName = JBTextField()
 
     private val scopeAllPanel: JPanel
@@ -152,23 +158,26 @@ class RunSettingsEditor(private val project: Project) : SettingsEditor<RunConfig
             folderDescriptor
         )
 
+        scopeFileEditor.emptyText.text = Latte.message("latte.settings.scope.file.placeholder")
+        scopeFile = TextFieldWithBrowseButton(scopeFileEditor)
         scopeFile.addBrowseFolderListener(
             project,
             fileDescriptorTest
         )
-        setPlaceholder(scopeFile, Latte.message("latte.settings.scope.test.file.placeholder"))
 
+        scopeSuiteFileEditor.emptyText.text = Latte.message("latte.settings.scope.suite.file.placeholder")
+        scopeSuiteFile = TextFieldWithBrowseButton(scopeSuiteFileEditor)
         scopeSuiteFile.addBrowseFolderListener(
             project,
             fileDescriptorTest
         )
-        setPlaceholder(scopeSuiteFile, Latte.message("latte.settings.scope.suite.file.placeholder"))
 
+        scopeTestFileEditor.emptyText.text = Latte.message("latte.settings.scope.test.file.placeholder")
+        scopeTestFile = TextFieldWithBrowseButton(scopeTestFileEditor)
         scopeTestFile.addBrowseFolderListener(
             project,
             fileDescriptorTest
         )
-        setPlaceholder(scopeTestFile, Latte.message("latte.settings.scope.test.file.placeholder"))
 
         radioAllTests.toolTipText = Latte.message("latte.settings.scope.all.tooltip")
         radioAllTests.setMnemonic('l')
