@@ -161,7 +161,7 @@ class RunConfiguration(
 
         latteConfigString += "--idea"
         latteConfigString += "--skipConfigFile"
-        latteConfigString += "--progress=none"
+//        latteConfigString += "--progress=none"
 
         if (latteConfig.dom) {latteConfigString += "--dom"}
         if (latteConfig.react) {latteConfigString += "--react"}
@@ -170,14 +170,11 @@ class RunConfiguration(
         if (latteConfig.loader) {latteConfigString += "--loader"}
         if (latteConfig.ts) {latteConfigString += "--ts"}
         if (latteConfig.clear) {latteConfigString += "--clear"}
-//        if (latteConfig.watch) {latteConfigString += "--watch"}
-//        if (latteConfig.parallel) {latteConfigString += "--parallel"}
-//        if (latteConfig.coverage) {latteConfigString += "--coverage"}
-
+        if (latteConfig.watch) {latteConfigString += "--watch"}
+        if (latteConfig.coverage) {latteConfigString += "--coverage"}
+        if (latteConfig.parallel) {latteConfigString += "--parallel"}
 
         latteConfig.maxWorkers.let { if (latteConfig.parallel && it > 0) {latteConfigString += "--max-workers=${latteConfig.maxWorkers}"} }
-        // Currently Run console not support required ANSI codes
-//        latteConfig.progress.isEmpty().let { if (!it) {latteConfigString += "--progress='${latteConfig.progress}'"} }
         latteConfig.reportType.isEmpty().let { if (!it) {latteConfigString += "--report-type='${latteConfig.reportType}'"} }
         latteConfig.reportDir.isEmpty().let { if (!it) {latteConfigString += "--report-dir='${latteConfig.reportDir}'"} }
         latteConfig.reportFile.isEmpty().let { if (!it) {latteConfigString += "--report-file='${latteConfig.reportFile}'"} }
@@ -185,6 +182,7 @@ class RunConfiguration(
         latteConfig.exclude.isEmpty().let { if (!it) {latteConfigString += "--exclude='${latteConfig.exclude}'"} }
         latteConfig.test.isEmpty().let { if (!it) {latteConfigString += "--test='${latteConfig.test}'"} }
         latteConfig.suite.isEmpty().let { if (!it) {latteConfigString += "--suite='${latteConfig.suite}'"} }
+        latteConfig.progress.isEmpty().let { if (!it) {latteConfigString += "--progress='${latteConfig.progress}'"} }
 
         return latteConfigString
     }
