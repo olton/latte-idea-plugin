@@ -18,6 +18,7 @@ import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.rml.dfa.ide.getLocation
 import com.intellij.util.Function
 import ua.com.pimenov.latte.runs.RunConfigurationType
 import ua.com.pimenov.latte.Latte
@@ -123,7 +124,7 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
             .build()
 
         // Створюємо контекст запуску
-        val context = ConfigurationContext.createEmptyContextForLocation(element as Location<*>)
+        val context = ConfigurationContext.getFromContext(dataContext)
 
         // Спроба знайти існуючу конфігурацію або створити нову
         val settings = context.getConfiguration()?.configuration?.let {
