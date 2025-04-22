@@ -161,6 +161,7 @@ class RunConfiguration(
 
         latteConfigString += "--idea"
         latteConfigString += "--skipConfigFile"
+        latteConfigString += "--progress=none"
 
         if (latteConfig.dom) {latteConfigString += "--dom"}
         if (latteConfig.react) {latteConfigString += "--react"}
@@ -175,7 +176,8 @@ class RunConfiguration(
 
 
         latteConfig.maxWorkers.let { if (latteConfig.parallel && it > 0) {latteConfigString += "--max-workers=${latteConfig.maxWorkers}"} }
-        latteConfig.progress.isEmpty().let { if (!it) {latteConfigString += "--progress='${latteConfig.progress}'"} }
+        // Currently Run console not support required ANSI codes
+//        latteConfig.progress.isEmpty().let { if (!it) {latteConfigString += "--progress='${latteConfig.progress}'"} }
         latteConfig.reportType.isEmpty().let { if (!it) {latteConfigString += "--report-type='${latteConfig.reportType}'"} }
         latteConfig.reportDir.isEmpty().let { if (!it) {latteConfigString += "--report-dir='${latteConfig.reportDir}'"} }
         latteConfig.reportFile.isEmpty().let { if (!it) {latteConfigString += "--report-file='${latteConfig.reportFile}'"} }
