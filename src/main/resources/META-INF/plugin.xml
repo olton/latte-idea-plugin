@@ -15,6 +15,21 @@
   <!-- Extension points defined by the plugin.
        Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
   <extensions defaultExtensionNs="com.intellij">
-    <configurationType implementation="ua.com.pimenov.latte.runs.RunConfigurationType"/>
+    <configurationType
+            implementation="ua.com.pimenov.latte.runs.RunConfigurationType"/>
+
+    <!-- Реєстрація LineMarkerProvider -->
+    <codeInsight.lineMarkerProvider
+            language="JavaScript"
+            implementationClass="ua.com.pimenov.latte.markers.JsTestLineMarkerProvider"/>
+    
+    <codeInsight.lineMarkerProvider
+            language="TypeScript"
+            implementationClass="ua.com.pimenov.latte.markers.JsTestLineMarkerProvider"/>
+
+    <!-- Реєстрація RunConfigurationProducer -->
+    <runConfigurationProducer
+            implementation="ua.com.pimenov.latte.runs.JsTestRunConfigurationProducer"/>
+
   </extensions>
 </idea-plugin>

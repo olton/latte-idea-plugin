@@ -1,5 +1,6 @@
 package ua.com.pimenov.latte.runs
 
+import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.execution.configurations.ConfigurationTypeBase
 import ua.com.pimenov.latte.utils.LatteIcons
 
@@ -19,6 +20,12 @@ class RunConfigurationType: ConfigurationTypeBase(
 
     companion object {
         const val ID: String = "LatteRunConfiguration"
+
+        // Метод getInstance для отримання зареєстрованого розширення
+        fun getInstance(): RunConfigurationType {
+            return ConfigurationType.CONFIGURATION_TYPE_EP.extensionList
+                .find { it.id == ID } as RunConfigurationType
+        }
     }
 }
 

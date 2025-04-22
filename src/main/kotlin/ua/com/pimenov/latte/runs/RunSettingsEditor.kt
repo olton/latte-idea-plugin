@@ -10,8 +10,6 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.ui.RawCommandLineEditor
-import com.intellij.ui.TextFieldWithHistoryWithBrowseButton
 import com.intellij.util.ui.FormBuilder
 import org.jetbrains.annotations.NotNull
 import java.awt.FlowLayout
@@ -20,9 +18,7 @@ import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.JRadioButton
 import javax.swing.JSeparator
-import javax.swing.JTextField
 import ua.com.pimenov.latte.Latte
-import ua.com.pimenov.latte.utils.setPlaceholder
 import java.awt.BorderLayout
 import java.awt.Cursor
 import javax.swing.JButton
@@ -53,14 +49,15 @@ class RunSettingsEditor(private val project: Project) : SettingsEditor<RunConfig
     private val configFileEditor = JBTextField()
     private val nodeInterpreter = NodeJsInterpreterField(project, true, true)
     private val nodeOptions = JBTextField()
+
     private val lattePath: NodePackageField
+    private val latteOptions = JBTextField()
 
     private val workingDirectoryPanel: JPanel
     private val workingDirectory: TextFieldWithBrowseButton
     private val workingDirectoryEditor = JBTextField()
     private val setProjectDirButton = JButton(AllIcons.Actions.ProjectDirectory)
 
-    private val latteOptions = JBTextField()
     private val envVariables = EnvironmentVariablesTextFieldWithBrowseButton()
 
     private val scopePanel: JPanel
@@ -130,10 +127,10 @@ class RunSettingsEditor(private val project: Project) : SettingsEditor<RunConfig
         )
 
         // Latte options
-        lattePath = NodePackageField(project, "latte", null)
-        latteOptions.text = null
+        lattePath = NodePackageField(project, "@olton/latte", null)
         latteOptions.emptyText.text = Latte.message("latte.settings.latte.options.placeholder")
 
+        // Create the action panel
         actionPanel = FormBuilder.createFormBuilder()
             .addLabeledComponent(Latte.message("latte.settings.config.file"), configFile)
             .addComponent(JSeparator())
