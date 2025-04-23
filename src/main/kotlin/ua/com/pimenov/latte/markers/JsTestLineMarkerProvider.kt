@@ -2,7 +2,6 @@ package ua.com.pimenov.latte.markers
 
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
-import com.intellij.execution.Location
 import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.RunManager
 import com.intellij.execution.RunnerAndConfigurationSettings
@@ -18,10 +17,10 @@ import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.rml.dfa.ide.getLocation
 import com.intellij.util.Function
 import ua.com.pimenov.latte.runs.RunConfigurationType
 import ua.com.pimenov.latte.Latte
+import ua.com.pimenov.latte.runs.ScopeType
 
 private enum class TestFunctionType {
     SUITE, TEST
@@ -32,7 +31,7 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
     companion object {
         private val RUN_TEST_ICON = AllIcons.RunConfigurations.TestState.Run
         private val RUN_SUITE_ICON = AllIcons.RunConfigurations.TestState.Run_run
-        private val TEST_FILE_EXTENSIONS = setOf("test.js", "test.jsx", "test.ts", "test.tsx")
+        private val TEST_FILE_EXTENSIONS = setOf("test.js", "test.jsx", "test.ts", "test.tsx", "spec.js", "spec.jsx", "spec.ts", "spec.tsx")
         private val TEST_FUNCTION_NAMES = setOf("describe", "it", "test")
     }
 
@@ -75,8 +74,7 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
         return parent is JSCallExpression
     }
 
-    private fun createLineMarkerInfo(element: PsiElement): LineMarkerInfo<PsiElement> {
-        // Визначаємо тип тестової функції
+    private fun getFunctionType(element: PsiElement): TestFunctionType? {
         val functionType = if (element is JSReferenceExpression) {
             when (element.text) {
                 "describe" -> TestFunctionType.SUITE
@@ -86,11 +84,18 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
         } else {
             TestFunctionType.TEST
         }
+        return functionType
+    }
+
+    private fun createLineMarkerInfo(element: PsiElement): LineMarkerInfo<PsiElement> {
+        // Визначаємо тип тестової функції
+        val functionType = getFunctionType(element)
 
         // Обираємо іконку та повідомлення відповідно до типу функції
         val icon = when (functionType) {
             TestFunctionType.SUITE -> RUN_SUITE_ICON
             TestFunctionType.TEST -> RUN_TEST_ICON
+            null -> TODO()
         }
 
         val tooltipText = when (functionType) {
@@ -114,7 +119,7 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
         val file = element.containingFile.virtualFile
 
         // Отримуємо ім'я тесту для запуску
-        val testName = getTestName(element)
+        val (testName, runName) = getTestName(element)
 
         // Створюємо простий DataContext на основі PsiElement
         val dataContext = SimpleDataContext.builder()
@@ -129,7 +134,7 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
         // Спроба знайти існуючу конфігурацію або створити нову
         val settings = context.getConfiguration()?.configuration?.let {
             RunManager.getInstance(project).findSettings(it)
-        } ?: createRunConfiguration(element, testName)
+        } ?: createRunConfiguration(element, testName, runName)
 
         // Якщо не вдалося створити конфігурацію, виходимо
         if (settings == null) {
@@ -141,7 +146,7 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
         ProgramRunnerUtil.executeConfiguration(settings, executor)
     }
 
-    private fun createRunConfiguration(element: PsiElement, testName: String): RunnerAndConfigurationSettings? {
+    private fun createRunConfiguration(element: PsiElement, testName: String, runName: String): RunnerAndConfigurationSettings? {
         val project = element.project
         val file = element.containingFile.virtualFile
 
@@ -151,24 +156,47 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
         // Створюємо нову конфігурацію запуску
         val configurationType = RunConfigurationType.getInstance()
         val factory = configurationType.configurationFactories.firstOrNull() ?: return null
-        val settings = runManager.createConfiguration(testName, factory)
+        val settings = runManager.createConfiguration(runName, factory)
 
-        // Налаштовуємо параметри конфігурації
-        val configuration = settings.configuration as? ua.com.pimenov.latte.runs.RunConfiguration
-        if (configuration != null) {
-            configuration.testFile = file.path
-            configuration.testName = testName
+        val functionType = getFunctionType(element)
+
+        // Налаштовуємо параметри конфігурації, переконавшись що це правильний тип
+        (settings.configuration as? ua.com.pimenov.latte.runs.RunConfiguration)?.let { config ->
+            // Встановлюємо параметри конфігурації
+            config.testScope = when (functionType) {
+                TestFunctionType.SUITE -> ScopeType.SUITE.id
+                TestFunctionType.TEST -> ScopeType.TEST.id
+                else -> ScopeType.ALL.id
+            }
+
+            if (functionType == TestFunctionType.SUITE) {
+                config.testScope = ScopeType.SUITE.id
+                config.suiteFile = file.path
+                config.suiteName = testName
+            } else if (functionType == TestFunctionType.TEST) {
+                config.testScope = ScopeType.TEST.id
+                config.testFile = file.path
+                config.testName = testName
+            } else {
+                config.testScope = ScopeType.ALL.id
+                config.suiteFile = ""
+                config.suiteName = ""
+                config.testFile = ""
+                config.testName = ""
+            }
 
             // Зберігаємо конфігурацію
             runManager.addConfiguration(settings)
             return settings
         }
 
+        // Якщо приведення типу не вдалося, повертаємо null
         return null
     }
 
-    private fun getTestName(element: PsiElement): String {
+    private fun getTestName(element: PsiElement): Pair<String, String> {
         var testName = "Unknown Test"
+        var runName = "Unknown Run"
 
         // Якщо елемент є JSReferenceExpression і його батько - JSCallExpression
         if (element is JSReferenceExpression && element.parent is JSCallExpression) {
@@ -190,26 +218,26 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
 
             // Додаємо префікс в залежності від типу тестової функції
             val functionName = element.text
-            testName = when (functionName) {
-                "describe" -> "Suite: $testName"
-                "it", "test" -> "Test: $testName"
+            runName = when (functionName) {
+                "describe" -> "Describe: $testName"
+                "test" -> "Test: $testName"
                 else -> testName
             }
 
             // Для вкладених тестів (test внутрі describe) намагаємося зібрати повний шлях
-            if (functionName == "it" || functionName == "test") {
+            if (functionName == "it") {
                 val parentDescribe = findParentDescribe(callExpression)
                 if (parentDescribe != null) {
                     val describeRef = PsiTreeUtil.findChildOfType(parentDescribe, JSReferenceExpression::class.java)
                     if (describeRef != null) {
-                        val describeName = getTestName(describeRef)
-                        testName = "$describeName > $testName"
+                        val (describeName, _) = getTestName(describeRef)
+                        runName = "$describeName > $testName"
                     }
                 }
             }
         }
 
-        return testName
+        return Pair(testName, runName)
     }
 
     private fun findParentDescribe(element: PsiElement): JSCallExpression? {
