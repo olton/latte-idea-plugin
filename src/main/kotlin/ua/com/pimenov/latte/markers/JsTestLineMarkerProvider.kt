@@ -3,6 +3,7 @@ package ua.com.pimenov.latte.markers
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.execution.ProgramRunnerUtil
+import com.intellij.execution.PsiLocation
 import com.intellij.execution.RunManager
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.actions.ConfigurationContext
@@ -32,7 +33,7 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
         private val RUN_TEST_ICON = AllIcons.RunConfigurations.TestState.Run
         private val RUN_SUITE_ICON = AllIcons.RunConfigurations.TestState.Run_run
         private val TEST_FILE_EXTENSIONS = setOf("test.js", "test.jsx", "test.ts", "test.tsx", "spec.js", "spec.jsx", "spec.ts", "spec.tsx")
-        private val TEST_FUNCTION_NAMES = setOf("describe", "it", "test")
+        private val TEST_FUNCTION_NAMES = setOf("describe", "suite", "it", "test")
     }
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<PsiElement>? {
@@ -77,7 +78,7 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
     private fun getFunctionType(element: PsiElement): TestFunctionType? {
         val functionType = if (element is JSReferenceExpression) {
             when (element.text) {
-                "describe" -> TestFunctionType.SUITE
+                "describe", "suite" -> TestFunctionType.SUITE
                 "it", "test" -> TestFunctionType.TEST
                 else -> TestFunctionType.TEST
             }
@@ -121,15 +122,10 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
         // Отримуємо ім'я тесту для запуску
         val (testName, runName) = getTestName(element)
 
-        // Створюємо простий DataContext на основі PsiElement
-        val dataContext = SimpleDataContext.builder()
-            .add(CommonDataKeys.PROJECT, project)
-            .add(CommonDataKeys.PSI_ELEMENT, element)
-            .add(CommonDataKeys.VIRTUAL_FILE, file)
-            .build()
+        val location = PsiLocation(project, element)
 
         // Створюємо контекст запуску
-        val context = ConfigurationContext.getFromContext(dataContext)
+        val context = ConfigurationContext.createEmptyContextForLocation(location)
 
         // Спроба знайти існуючу конфігурацію або створити нову
         val settings = context.getConfiguration()?.configuration?.let {
@@ -219,7 +215,7 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
             // Додаємо префікс в залежності від типу тестової функції
             val functionName = element.text
             runName = when (functionName) {
-                "describe" -> "Describe: $testName"
+                "describe", "suite" -> "Suite: $testName"
                 "test" -> "Test: $testName"
                 else -> testName
             }
@@ -245,7 +241,7 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
         while (parent != null) {
             if (parent is JSCallExpression) {
                 val reference = PsiTreeUtil.findChildOfType(parent, JSReferenceExpression::class.java)
-                if (reference != null && reference.text == "describe") {
+                if (reference != null && (reference.text == "describe" || reference.text == "suite")) {
                     return parent
                 }
             }
