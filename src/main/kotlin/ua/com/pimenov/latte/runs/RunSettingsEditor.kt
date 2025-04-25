@@ -10,6 +10,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.ui.JBColor
 import com.intellij.util.ui.FormBuilder
 import org.jetbrains.annotations.NotNull
 import java.awt.FlowLayout
@@ -24,6 +25,11 @@ import java.awt.Cursor
 import javax.swing.JButton
 import java.awt.Dimension
 import com.intellij.ui.components.JBTextField
+import javax.swing.BorderFactory
+import javax.swing.JCheckBox
+import javax.swing.border.TitledBorder
+import com.intellij.ui.RoundedLineBorder
+
 
 
 enum class ScopeType(val id: String) {

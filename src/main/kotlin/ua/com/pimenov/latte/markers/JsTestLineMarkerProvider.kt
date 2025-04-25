@@ -42,13 +42,31 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
             return null
         }
 
-        // Перевіряємо чи елемент є викликом тестової функції
-        if (!isTestFunction(element)) {
+        // Працюємо лише з точковими елементами (leaf elements)
+        if (element.firstChild != null) {
             return null
         }
 
-        // Створюємо і повертаємо LineMarkerInfo
-        return createLineMarkerInfo(element)
+        // Перевіряємо чи елемент є частиною виклику тестової функції
+        val refExpression = findParentReferenceExpression(element)
+        if (refExpression == null || !isTestFunction(refExpression)) {
+            return null
+        }
+
+        // Створюємо і повертаємо LineMarkerInfo для точкового елемента
+        return createLineMarkerInfo(element, refExpression)
+    }
+
+    private fun findParentReferenceExpression(element: PsiElement): JSReferenceExpression? {
+        var current = element
+        // Якщо елемент є частиною ідентифікатора, знаходимо батьківський JSReferenceExpression
+        while (current.parent != null) {
+            if (current.parent is JSReferenceExpression) {
+                return current.parent as JSReferenceExpression
+            }
+            current = current.parent
+        }
+        return null
     }
 
     private fun isTestFile(file: PsiFile): Boolean {
@@ -56,41 +74,31 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
         return TEST_FILE_EXTENSIONS.any { fileName.endsWith(it) }
     }
 
-    private fun isTestFunction(element: PsiElement): Boolean {
-        // Якщо елемент не є ідентифікатором - виходимо
-        if (element !is JSReferenceExpression) {
-            return false
-        }
-
+    private fun isTestFunction(element: JSReferenceExpression): Boolean {
         // Отримуємо текст ідентифікатора
         val identifierText = element.text
 
-        // Перевіряємо чи це один з тестових методів
+        // Перевіряємо, чи це один з тестових методів
         if (!TEST_FUNCTION_NAMES.contains(identifierText)) {
             return false
         }
 
-        // Перевіряємо чи це виклик функції
+        // Перевіряємо, чи це виклик функції
         val parent = element.parent
         return parent is JSCallExpression
     }
 
     private fun getFunctionType(element: PsiElement): TestFunctionType? {
-        val functionType = if (element is JSReferenceExpression) {
-            when (element.text) {
-                "describe", "suite" -> TestFunctionType.SUITE
-                "it", "test" -> TestFunctionType.TEST
-                else -> TestFunctionType.TEST
-            }
-        } else {
-            TestFunctionType.TEST
+        return when (element.text) {
+            "describe", "suite" -> TestFunctionType.SUITE
+            "it", "test" -> TestFunctionType.TEST
+            else -> TestFunctionType.TEST
         }
-        return functionType
     }
 
-    private fun createLineMarkerInfo(element: PsiElement): LineMarkerInfo<PsiElement> {
+    private fun createLineMarkerInfo(element: PsiElement, refExpression: JSReferenceExpression): LineMarkerInfo<PsiElement> {
         // Визначаємо тип тестової функції
-        val functionType = getFunctionType(element)
+        val functionType = getFunctionType(refExpression)
 
         // Обираємо іконку та повідомлення відповідно до типу функції
         val icon = when (functionType) {
@@ -154,7 +162,8 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
         val factory = configurationType.configurationFactories.firstOrNull() ?: return null
         val settings = runManager.createConfiguration(runName, factory)
 
-        val functionType = getFunctionType(element)
+        val refExpression = if (element is JSReferenceExpression) element else findParentReferenceExpression(element)
+        val functionType = refExpression?.let { getFunctionType(it) } ?: TestFunctionType.TEST
 
         // Налаштовуємо параметри конфігурації, переконавшись що це правильний тип
         (settings.configuration as? ua.com.pimenov.latte.runs.RunConfiguration)?.let { config ->
@@ -194,9 +203,11 @@ class JsTestLineMarkerProvider : LineMarkerProvider {
         var testName = "Unknown Test"
         var runName = "Unknown Run"
 
+        val refExpression = if (element is JSReferenceExpression) element else findParentReferenceExpression(element)
+
         // Якщо елемент є JSReferenceExpression і його батько - JSCallExpression
-        if (element is JSReferenceExpression && element.parent is JSCallExpression) {
-            val callExpression = element.parent as JSCallExpression
+        if (refExpression != null && refExpression.parent is JSCallExpression) {
+            val callExpression = refExpression.parent as JSCallExpression
 
             // Отримуємо аргументи виклику функції
             val arguments = callExpression.arguments

@@ -13,7 +13,7 @@ Latte (an abbreviation from `laconic testing`) is a testing framework designed f
 
 ## Installation
 
-Not available yet :( Plugin in development.
+<iframe width="245px" height="48px" src="https://plugins.jetbrains.com/embeddable/install/27190"></iframe>
 
 
 ## Supported Platforms
