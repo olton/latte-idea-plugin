@@ -1,7 +1,7 @@
 plugins {
   id("java")
   id("org.jetbrains.kotlin.jvm") version "2.1.0"
-  id("org.jetbrains.intellij.platform") version "2.3.0"
+  id("org.jetbrains.intellij.platform") version "2.5.0"
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -14,10 +14,10 @@ repositories {
   }
 }
 
-// Configure Gradle IntelliJ Plugin
-// Read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html
 dependencies {
   implementation("com.beust:klaxon:5.5")
+  implementation("org.jetbrains:marketplace-zip-signer:0.1.34")
+
   intellijPlatform {
     webstorm("2025.1")
     bundledPlugin("JavaScript")
@@ -33,6 +33,28 @@ intellijPlatform {
     changeNotes = """
       Initial version
     """.trimIndent()
+  }
+
+  signing {
+    certificateChain.set(providers.environmentVariable("CERTIFICATE_CHAIN"))
+    privateKey.set(providers.environmentVariable("PRIVATE_KEY"))
+    password.set(providers.environmentVariable("PRIVATE_KEY_PASSWORD"))
+  }
+
+  publishing {
+    token.set(providers.environmentVariable("PUBLISH_TOKEN"))
+  }
+
+  pluginConfiguration {
+    changeNotes.set("""
+          Initial version
+        """.trimIndent())
+  }
+
+  pluginVerification {
+    ides {
+      recommended()
+    }
   }
 }
 

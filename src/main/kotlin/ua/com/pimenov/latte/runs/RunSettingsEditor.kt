@@ -95,9 +95,13 @@ class RunSettingsEditor(private val project: Project) : SettingsEditor<RunConfig
 
     private val folderDescriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor()
     private val fileDescriptorConf = FileChooserDescriptorFactory.createSingleFileDescriptor("json")
-    private val fileDescriptorTest = FileChooserDescriptorFactory.singleFile().withExtensionFilter("Select test file...", "js", "ts", "jsx", "tsx")
+    private val fileDescriptorTest = FileChooserDescriptorFactory.singleFile()
+        .withExtensionFilter("Tests file", "js", "ts", "jsx", "tsx")
 
     init {
+        folderDescriptor.title = "Select Directory"
+        fileDescriptorConf.title = "Select Config File"
+        fileDescriptorTest.title = "Select Test File"
 
         // Latte Config file
         configFileEditor.emptyText.text = Latte.message("latte.settings.config.file.placeholder")

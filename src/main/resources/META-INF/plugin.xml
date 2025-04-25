@@ -1,10 +1,32 @@
 <idea-plugin>
   <id>ua.com.pimenov.latte</id>
-  <name>Latte Testing Framework</name>
+  <name>Latte Test Runner</name>
   <vendor url="https://pimenov.com.ua">Serhii Pimenov</vendor>
   <description><![CDATA[
-    Plugin for the Latte test framework.
-    It supports testing for JavaScript, TypeScript, HTML elements (DOM enabled), React Components, and entire web pages with a built-in headless browser.
+    <div><b>Latte Test Runner</b> is an IntelliJ-based plugin that provides integration for the <a href="https://latte.org.ua">Latte Testing Framework</a>.</div>
+
+    <br/>
+    <div>
+    Latte designed for testing applications written in JavaScript and TypeScript, including React Components, HTML elements, and Web pages.
+    </div>
+
+    <br/>
+    <b>Latte core features:</b>
+
+    <ul>
+      <li>Testing JavaScript and TypeScript</li>
+      <li>Testing an HTML element with built-in DOM support</li>
+      <li>Testing Web pages with a built-in headless browser</li>
+      <li>Testing React components</li>
+    </ul>
+
+    <div style="margin-top: 10px;">
+      <div>Latte website: <a href="https://latte.org.ua">https://latte.org.ua</a></div>
+      <div>Latte repository: <a href="https://github.com/olton/latte">https://github.com/olton/latte</a></div>
+      <div>Plugin repository: <a href="https://github.com/olton/latte-idea-plugin">https://github.com/olton/latte-idea-plugin</a></div>
+    </div>
+    <br/>
+    <div>This plugin required installed Latte Framework!</div>
   ]]></description>
 
   <!-- Product and plugin compatibility requirements.

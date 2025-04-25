@@ -1,12 +1,16 @@
 package ua.com.pimenov.latte.runs
 
 import com.intellij.execution.actions.ConfigurationContext
-import com.intellij.execution.actions.RunConfigurationProducer
-import com.intellij.execution.configurations.RunConfiguration
+import com.intellij.execution.actions.LazyRunConfigurationProducer
+import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 
-class JsTestRunConfigurationProducer : RunConfigurationProducer<RunConfiguration>(RunConfigurationType()) {
+class JsTestRunConfigurationProducer : LazyRunConfigurationProducer<RunConfiguration>() {
+
+    override fun getConfigurationFactory(): ConfigurationFactory {
+        return RunConfigurationType.getInstance().configurationFactories.first()
+    }
 
     override fun setupConfigurationFromContext(
         configuration: RunConfiguration,
