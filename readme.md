@@ -25,7 +25,7 @@ Latte (an abbreviation from `laconic testing`) is a testing framework designed f
 
 You can install plugin from:
 
-[![Marketplace](marketplace.svg)](https://plugins.jetbrains.com/plugin/27190-latte-test-runner)
+[![Marketplace](marketplace.svg)](https://plugins.jetbrains.com/plugin/27225-latte-test-runner)
 
 Or directly from your IDE:
 1. Install a compatible JetBrains IDE, such as WebStorm, or other IntelliJ-based IDEs
