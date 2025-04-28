@@ -20,14 +20,19 @@
       <li>Testing React components</li>
     </ul>
 
-    <div style="margin-top: 10px;">
+    <br/>
+    <div>
       <div>Latte website: <a href="https://latte.org.ua">https://latte.org.ua</a></div>
       <div>Latte repository: <a href="https://github.com/olton/latte">https://github.com/olton/latte</a></div>
       <div>Plugin repository: <a href="https://github.com/olton/latte-idea-plugin">https://github.com/olton/latte-idea-plugin</a></div>
     </div>
     <br/>
-    <div>This plugin required installed Latte Framework!</div>
+    <p>
+    ⚠️ Important! <a href="https://latte.org.ua">Latte Framework</a> must be installed before using Latte Test Runner Plugin.
+    </p>
   ]]></description>
+
+  <idea-version since-build="251" />
 
   <!-- Product and plugin compatibility requirements.
        Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->

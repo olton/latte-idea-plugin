@@ -27,7 +27,7 @@ dependencies {
 intellijPlatform {
   pluginConfiguration {
     ideaVersion {
-      sinceBuild = "242"
+      sinceBuild = "251"
     }
 
     changeNotes = """
@@ -43,12 +43,6 @@ intellijPlatform {
 
   publishing {
     token.set(providers.environmentVariable("PUBLISH_TOKEN"))
-  }
-
-  pluginConfiguration {
-    changeNotes.set("""
-          Initial version
-        """.trimIndent())
   }
 
   pluginVerification {
