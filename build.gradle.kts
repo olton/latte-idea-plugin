@@ -32,7 +32,11 @@ intellijPlatform {
     }
 
     changeNotes = """
-      Initial version
+        <h2>New Features</h2>
+        <ul>
+            <li>Added support for new latte cli arguments</li>
+            <li>Improved performance and stability</li>
+        </ul>
     """.trimIndent()
   }
 

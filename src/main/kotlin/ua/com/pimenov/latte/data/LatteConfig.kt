@@ -20,9 +20,10 @@ class LatteConfig {
     var reportDir: String = "coverage"
     var reportFile: String = ""
     var maxWorkers: Int = 4
-    var progress: String = "default"
-    var clear: Boolean = true
+    var progress: String = "none"
+    var clearConsole: Boolean = true
     var idea: Boolean = true
+    var showStack: Boolean = false
 
     operator fun set(key: String, value: Any?) {
         when (key) {
@@ -46,7 +47,7 @@ class LatteConfig {
             "reportFile" -> reportFile = (value as? String) ?: reportFile
             "maxWorkers" -> maxWorkers = (value as? Int) ?: maxWorkers
             "progress" -> progress = (value as? String) ?: progress
-            "clear" -> clear = (value as? Boolean) ?: clear
+            "clear" -> clearConsole = (value as? Boolean) ?: clearConsole
             "idea" -> idea = (value as? Boolean) ?: idea
         }
     }

@@ -152,7 +152,8 @@ class RunConfiguration(
                     "--exclude" -> { latteConfig.exclude = value!! }
                     "--test" -> { latteConfig.test = value!! }
                     "--suite" -> { latteConfig.suite = value!! }
-                    "--clear" -> { latteConfig.clear = true }
+                    "--clear-console" -> { latteConfig.clearConsole = true }
+                    "--show-stack", "-s" -> { latteConfig.showStack = true }
                 }
             }
         }
@@ -168,10 +169,11 @@ class RunConfiguration(
         if (latteConfig.debug) {latteConfigString += "--debug"}
         if (latteConfig.loader) {latteConfigString += "--loader"}
         if (latteConfig.ts) {latteConfigString += "--ts"}
-        if (latteConfig.clear) {latteConfigString += "--clear"}
+        if (latteConfig.clearConsole) {latteConfigString += "--clear-console"}
         if (latteConfig.watch) {latteConfigString += "--watch"}
         if (latteConfig.coverage) {latteConfigString += "--coverage"}
         if (latteConfig.parallel) {latteConfigString += "--parallel"}
+        if (latteConfig.showStack) {latteConfigString += "--show-stack"}
 
         latteConfig.maxWorkers.let { if (latteConfig.parallel && it > 0) {latteConfigString += "--max-workers=${latteConfig.maxWorkers}"} }
         latteConfig.reportType.isEmpty().let { if (!it) {latteConfigString += "--report-type='${latteConfig.reportType}'"} }
