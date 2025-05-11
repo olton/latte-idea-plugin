@@ -1,8 +1,8 @@
 <idea-plugin>
-  <id>ua.com.pimenov.latte</id>
-  <name>Latte Test Runner</name>
-  <vendor url="https://pimenov.com.ua">Serhii Pimenov</vendor>
-  <description><![CDATA[
+    <id>ua.com.pimenov.latte</id>
+    <name>Latte Test Runner</name>
+    <vendor url="https://pimenov.com.ua">Serhii Pimenov</vendor>
+    <description><![CDATA[
     <div><b>Latte Test Runner</b> is an IntelliJ-based plugin that provides integration for the <a href="https://latte.org.ua">Latte Testing Framework</a>.</div>
 
     <br/>
@@ -32,31 +32,38 @@
     </p>
   ]]></description>
 
-  <idea-version since-build="251" />
+    <idea-version since-build="251"/>
 
-  <!-- Product and plugin compatibility requirements.
-       Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
-  <depends>com.intellij.modules.platform</depends>
-  <depends>JavaScript</depends>
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>JavaScript</depends>
 
-  <!-- Extension points defined by the plugin.
-       Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
-  <extensions defaultExtensionNs="com.intellij">
-    <configurationType
-            implementation="ua.com.pimenov.latte.runs.RunConfigurationType"/>
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <configurationType
+                implementation="ua.com.pimenov.latte.runs.RunConfigurationType"/>
 
-    <!-- Реєстрація LineMarkerProvider -->
-    <codeInsight.lineMarkerProvider
-            language="JavaScript"
-            implementationClass="ua.com.pimenov.latte.markers.JsTestLineMarkerProvider"/>
-    
-    <codeInsight.lineMarkerProvider
-            language="TypeScript"
-            implementationClass="ua.com.pimenov.latte.markers.JsTestLineMarkerProvider"/>
+        <!-- Зареєструймо наш RunLineMarkerContributor -->
+        <runLineMarkerContributor language="JavaScript" implementationClass="ua.com.pimenov.latte.markers.JsTestRunLineMarkerContributor"/>
+        <runLineMarkerContributor language="TypeScript" implementationClass="ua.com.pimenov.latte.markers.JsTestRunLineMarkerContributor"/>
 
-    <!-- Реєстрація RunConfigurationProducer -->
-    <runConfigurationProducer
-            implementation="ua.com.pimenov.latte.runs.JsTestRunConfigurationProducer"/>
+        <!-- Реєстрація RunConfigurationProducer -->
+        <runConfigurationProducer
+                implementation="ua.com.pimenov.latte.runs.JsTestRunConfigurationProducer"/>
 
-  </extensions>
+    </extensions>
+
+    <actions>
+        <!-- Додаємо дію для запуску тестового файлу -->
+        <action id="Latte.RunTestFile"
+                class="ua.com.pimenov.latte.actions.RunTestFileAction"
+                text="Run Test File"
+                description="Run current test file with Latte"
+                icon="AllIcons.RunConfigurations.TestState.Run_run">
+            <add-to-group group-id="EditorPopupMenu.Run" anchor="first"/>
+            <add-to-group group-id="ProjectViewPopupMenuRunGroup" anchor="first"/>
+        </action>
+    </actions>
 </idea-plugin>

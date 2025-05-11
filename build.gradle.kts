@@ -34,8 +34,14 @@ intellijPlatform {
     changeNotes = """
         <h2>New Features</h2>
         <ul>
-            <li>Added support for new latte cli arguments</li>
+            <li>Added Context menu action to execute test file</li>
             <li>Improved performance and stability</li>
+            <li>When you run test with gutter button or context action '--dom' option will be added automatically</li>
+            <li>When you run TypeScript test env 'NODE_OPTIONS=--import tsx' will be added automatically</li>
+        </ul>
+        <h2>Bug Fixes</h2>
+        <ul>
+            <li>Fixed double buttons on gutter</li>
         </ul>
     """.trimIndent()
   }
