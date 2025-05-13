@@ -61,7 +61,7 @@
                 class="ua.com.pimenov.latte.actions.RunTestFileAction"
                 text="Run Test File"
                 description="Run current test file with Latte"
-                icon="AllIcons.RunConfigurations.TestState.Run_run">
+                icon="ua.com.pimenov.latte.utils.LatteIcons.LatteIcon">
             <add-to-group group-id="EditorPopupMenu.Run" anchor="first"/>
             <add-to-group group-id="ProjectViewPopupMenuRunGroup" anchor="first"/>
         </action>
