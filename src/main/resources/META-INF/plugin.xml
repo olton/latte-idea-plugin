@@ -56,14 +56,18 @@
     </extensions>
 
     <actions>
+        <group id="Latte.Group" icon="ua.com.pimenov.latte.utils.LatteIcons.LatteIcon">
+            <add-to-group group-id="RunMenu" anchor="last"/>
+            <add-to-group group-id="EditorPopupMenu.Run" anchor="first"/>
+            <add-to-group group-id="ProjectViewPopupMenuRunGroup" anchor="first"/>
+            <separator/>
+        </group>
         <!-- Додаємо дію для запуску тестового файлу -->
         <action id="Latte.RunTestFile"
                 class="ua.com.pimenov.latte.actions.RunTestFileAction"
-                text="Run Test File"
-                description="Run current test file with Latte"
                 icon="ua.com.pimenov.latte.utils.LatteIcons.LatteIcon">
-            <add-to-group group-id="EditorPopupMenu.Run" anchor="first"/>
-            <add-to-group group-id="ProjectViewPopupMenuRunGroup" anchor="first"/>
+            <add-to-group group-id="Latte.Group" anchor="first"/>
         </action>
     </actions>
+    <resource-bundle>messages.Latte</resource-bundle>
 </idea-plugin>

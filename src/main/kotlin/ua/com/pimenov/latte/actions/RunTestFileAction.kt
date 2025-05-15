@@ -10,16 +10,12 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import ua.com.pimenov.latte.Latte
+import ua.com.pimenov.latte.data.TEST_FILE_EXTENSIONS
 import ua.com.pimenov.latte.markers.JsTestRunLineMarkerContributor
 import ua.com.pimenov.latte.runs.RunConfigurationType
 import ua.com.pimenov.latte.runs.ScopeType
-import javax.swing.Icon
 
 class RunTestFileAction : AnAction() {
-    companion object {
-        private val TEST_FILE_EXTENSIONS = setOf("test.js", "test.jsx", "test.ts", "test.tsx", "spec.js", "spec.jsx", "spec.ts", "spec.tsx")
-    }
-
     // Встановлюємо іконку та текст для дії
     init {
         templatePresentation.text = Latte.message("latte.action.run.test.file")
@@ -39,6 +35,12 @@ class RunTestFileAction : AnAction() {
         val presentation = e.presentation
         val project = e.project
         val file = e.getData(CommonDataKeys.VIRTUAL_FILE)
+        
+        if (file != null) {
+            e.presentation.text = Latte.message("latte.action.run.test.file").replace("Unnamed", file.name)
+        } else {
+            e.presentation.text = Latte.message("latte.action.run.test.file")
+        }
 
         // Показуємо дію тільки для тестових файлів
         presentation.isEnabledAndVisible = project != null && file != null && isTestFile(file)

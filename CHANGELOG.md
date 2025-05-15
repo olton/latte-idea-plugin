@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1
+- Add the current file name to the context action title
+- Fixed Latte Producer for `avarice`, IDE no longer uses Latte Producer to create a launch configuration for regular files
+
 ## 0.3.0
 - Added Context menu action to execute a test file
 - Improved performance and stability
