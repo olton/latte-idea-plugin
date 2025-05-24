@@ -34,7 +34,8 @@ intellijPlatform {
     changeNotes = """
         <h2>New Features</h2>
         <ul>
-            <li>Add support new latte cli argument <b>--dom-env</b></li>
+            <li>Added support new latte cli argument <b>--dom-env</b></li>
+            <li>Added integration with <b>IDE TestExplorer</b></li>
         </ul>
     """.trimIndent()
   }
