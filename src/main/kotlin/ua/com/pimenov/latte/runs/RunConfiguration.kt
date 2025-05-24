@@ -154,6 +154,7 @@ class RunConfiguration(
                     "--suite" -> { latteConfig.suite = value!! }
                     "--clear-console" -> { latteConfig.clearConsole = true }
                     "--show-stack", "-s" -> { latteConfig.showStack = true }
+                    "--dom-env" -> { latteConfig.domEnv = value!! }
                 }
             }
         }
@@ -183,6 +184,7 @@ class RunConfiguration(
         latteConfig.test.isEmpty().let { if (!it) {latteConfigString += "--test='${latteConfig.test}'"} }
         latteConfig.suite.isEmpty().let { if (!it) {latteConfigString += "--suite='${latteConfig.suite}'"} }
         latteConfig.progress.isEmpty().let { if (!it) {latteConfigString += "--progress='${latteConfig.progress}'"} }
+        latteConfig.domEnv.isEmpty().let { if (!it) {latteConfigString += "--dom-env='${latteConfig.domEnv}'"} }
 
         val scope = when (testScope) {
             ScopeType.DIRECTORY.id -> { arrayOf("--include='$testsDirectory/**/*.{test,spec}.{js,ts,jsx,tsx}'") }

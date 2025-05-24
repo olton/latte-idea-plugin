@@ -24,6 +24,7 @@ class LatteConfig {
     var clearConsole: Boolean = true
     var idea: Boolean = true
     var showStack: Boolean = false
+    var domEnv: String = "jsdom"
 
     operator fun set(key: String, value: Any?) {
         when (key) {
@@ -49,6 +50,7 @@ class LatteConfig {
             "progress" -> progress = (value as? String) ?: progress
             "clear" -> clearConsole = (value as? Boolean) ?: clearConsole
             "idea" -> idea = (value as? Boolean) ?: idea
+            "domEnv" -> domEnv = (value as? String) ?: domEnv
         }
     }
 }

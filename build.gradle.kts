@@ -34,12 +34,7 @@ intellijPlatform {
     changeNotes = """
         <h2>New Features</h2>
         <ul>
-            <li>Added current file name to context action title</li>
-        </ul>
-        
-        <h2>Bug Fixes</h2>
-        <ul>
-            <li>Fixed Latte Producer for "avarice", IDE no longer uses Latte Producer to create a launch configuration for regular files</li>
+            <li>Add support new latte cli argument <b>--dom-env</b></li>
         </ul>
     """.trimIndent()
   }

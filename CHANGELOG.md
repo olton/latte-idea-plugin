@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.0
+- Add support new latte cli argument `--dom-env`
+
 ## 0.3.1
 - Add the current file name to the context action title
 - Fixed Latte Producer for `avarice`, IDE no longer uses Latte Producer to create a launch configuration for regular files
