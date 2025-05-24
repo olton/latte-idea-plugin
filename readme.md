@@ -14,6 +14,8 @@ Latte (an abbreviation from `laconic testing`) is a testing framework designed f
 
 + Create and execute Run Configuration for your tests
 + Run tests directly from the code editor
++ View test results in the IntelliJ IDEA Test Explorer
++ Navigate to test failures directly from the console output
 
 ### Resources
 

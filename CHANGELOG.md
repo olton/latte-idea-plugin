@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0
+- Added support for IntelliJ IDEA Test Explorer
+- Added console filter for test output to create hyperlinks for file paths
+
 ## 0.4.0
 - Add support new latte cli argument `--dom-env`
 

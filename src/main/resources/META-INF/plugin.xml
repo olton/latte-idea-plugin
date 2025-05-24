@@ -53,6 +53,12 @@
         <runConfigurationProducer
                 implementation="ua.com.pimenov.latte.runs.JsTestRunConfigurationProducer"/>
 
+        <!-- TestExplorer integration -->
+        <consoleFilterProvider implementation="ua.com.pimenov.latte.testing.LatteConsoleFilterProvider"/>
+        <lang.testFramework language="JavaScript" implementationClass="ua.com.pimenov.latte.testing.LatteTestFramework"/>
+        <lang.testFramework language="TypeScript" implementationClass="ua.com.pimenov.latte.testing.LatteTestFramework"/>
+        <testFinder implementation="ua.com.pimenov.latte.testing.LatteTestLocationProvider"/>
+
     </extensions>
 
     <actions>

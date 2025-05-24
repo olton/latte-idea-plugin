@@ -10,6 +10,7 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessHandlerFactory
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.execution.ui.ConsoleView
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import ua.com.pimenov.latte.data.LatteConfig
@@ -230,6 +231,9 @@ class RunConfiguration(
                     commandLine.addParameter(param)
                 }
 
+                // Add --teamcity flag for Test Explorer integration
+                commandLine.addParameter("--teamcity")
+
                 commandLine.charset = Charset.forName("UTF-8")
                 commandLine.setWorkDirectory(workingDirectory ?: project.basePath ?: "")
 
@@ -242,6 +246,14 @@ class RunConfiguration(
                     .createColoredProcessHandler(commandLine)
                 ProcessTerminatedListener.attach(processHandler)
                 return processHandler
+            }
+
+            override fun createConsole(executor: Executor): ConsoleView {
+                return ua.com.pimenov.latte.testing.LatteTestConsoleProperties.createConsole(
+                    "Latte",
+                    this@RunConfiguration,
+                    executor
+                )
             }
         }
     }
