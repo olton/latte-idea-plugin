@@ -4,6 +4,7 @@ import com.intellij.execution.filters.ConsoleFilterProvider
 import com.intellij.execution.filters.Filter
 import com.intellij.execution.filters.HyperlinkInfo
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.search.GlobalSearchScope
@@ -99,8 +100,43 @@ class LatteConsoleFilter(private val project: Project) : Filter {
 
             // Process different types of TeamCity messages
             when (eventType) {
-                "testSuiteStarted", "testStarted", "testFinished", "testFailed", "testIgnored" -> {
-                    // For test-related messages, highlight the entire message
+                "testFailed" -> {
+                    // For failed tests, create a hyperlink to the test location if locationHint is available
+                    if (locationHint.isNotEmpty()) {
+                        // Extract file path and line number from locationHint
+                        // Format is typically: file:///path/to/file.js:line:column
+                        val fileLocationMatch = Regex("file:///(.*?):(\\d+):(\\d+)").find(locationHint)
+                        if (fileLocationMatch != null) {
+                            val filePath = fileLocationMatch.groupValues[1]
+                            val lineNumber = fileLocationMatch.groupValues[2].toIntOrNull() ?: 1
+                            var colNumber = fileLocationMatch.groupValues[3].toIntOrNull() ?: 1
+
+                            return Filter.Result(
+                                startOffset,
+                                endOffset,
+                                object : HyperlinkInfo {
+                                    override fun navigate(project: Project) {
+                                        val file = File(filePath)
+                                        if (file.exists()) {
+                                            val virtualFile = LocalFileSystem.getInstance().findFileByIoFile(file)
+                                            if (virtualFile != null) {
+                                                // Navigate to the specific line in the file
+                                                FileEditorManager.getInstance(project).openTextEditor(
+                                                    OpenFileDescriptor(project, virtualFile, lineNumber - 1, colNumber - 1),
+                                                    true
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            )
+                        }
+                    }
+                    // If no locationHint or couldn't parse it, just highlight the message
+                    return Filter.Result(startOffset, endOffset, null)
+                }
+                "testSuiteStarted", "testStarted", "testFinished", "testIgnored" -> {
+                    // For other test-related messages, highlight the entire message
                     return Filter.Result(startOffset, endOffset, null)
                 }
                 else -> {
@@ -140,13 +176,15 @@ class LatteConsoleFilter(private val project: Project) : Filter {
 
                     // Navigate to the first location found
                     if (locations.isNotEmpty()) {
-                        // Instead of trying to navigate to the location directly,
-                        // we'll open the file using FileEditorManager
                         val file = File(filePath)
                         if (file.exists()) {
                             val virtualFile = LocalFileSystem.getInstance().findFileByIoFile(file)
                             if (virtualFile != null) {
-                                FileEditorManager.getInstance(project).openFile(virtualFile, true)
+                                // Navigate to the specific line in the file
+                                FileEditorManager.getInstance(project).openTextEditor(
+                                    OpenFileDescriptor(project, virtualFile, lineNumber - 1, 0),
+                                    true
+                                )
                             }
                         }
                     }
