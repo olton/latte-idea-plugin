@@ -4,13 +4,19 @@ import com.intellij.execution.testframework.sm.runner.SMTestLocator
 import com.intellij.ide.fileTemplates.FileTemplateDescriptor
 import com.intellij.lang.javascript.JavaScriptSupportLoader
 import com.intellij.openapi.module.Module
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.testIntegration.TestFramework
 import ua.com.pimenov.latte.utils.LatteIcons
 import javax.swing.Icon
+import ua.com.pimenov.latte.utils.isTestFile
 
 class LatteTestFramework : TestFramework {
+    companion object {
+        val INSTANCE: LatteTestFramework = LatteTestFramework()
+    }
+
     override fun getName(): String = "Latte"
 
     override fun getIcon(): Icon = LatteIcons.LatteIcon
@@ -41,19 +47,12 @@ class LatteTestFramework : TestFramework {
 
     override fun isIgnoredMethod(element: PsiElement): Boolean = false
 
-    // Custom methods for Latte test framework
-    fun isTestFile(file: PsiFile): Boolean {
-        val fileName = file.name
-        return (fileName.endsWith(".test.js") || fileName.endsWith(".test.ts") || 
-                fileName.endsWith(".test.jsx") || fileName.endsWith(".test.tsx") ||
-                fileName.endsWith(".spec.js") || fileName.endsWith(".spec.ts") ||
-                fileName.endsWith(".spec.jsx") || fileName.endsWith(".spec.tsx"))
-    }
+
 
     fun isApplicableFor(file: PsiFile): Boolean {
         val fileType = file.fileType
         return (fileType === JavaScriptSupportLoader.JAVASCRIPT || 
-                fileType === JavaScriptSupportLoader.TYPESCRIPT) && isTestFile(file)
+                fileType === JavaScriptSupportLoader.TYPESCRIPT) && isTestFile(file as VirtualFile)
     }
 
     override fun getLanguage() = JavaScriptSupportLoader.JAVASCRIPT.language

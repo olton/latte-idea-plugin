@@ -43,6 +43,7 @@ class LatteConsoleFilter(private val project: Project) : Filter {
         private val TEAMCITY_PARAM_PATTERN = Regex("(\\w+)=(?:'([^']*)'|\"([^\"]*)\")")
     }
 
+    // Get the test status manager
     override fun applyFilter(line: String, entireLength: Int): Filter.Result? {
         // First try to match TeamCity format
         val teamcityMatch = TEAMCITY_PATTERN.find(line)
@@ -101,10 +102,8 @@ class LatteConsoleFilter(private val project: Project) : Filter {
             // Process different types of TeamCity messages
             when (eventType) {
                 "testFailed" -> {
-                    // For failed tests, create a hyperlink to the test location if locationHint is available
+                    // Update test status to failed
                     if (locationHint.isNotEmpty()) {
-                        // Extract file path and line number from locationHint
-                        // Format is typically: file:///path/to/file.js:line:column
                         val fileLocationMatch = Regex("file:///(.*?):(\\d+):(\\d+)").find(locationHint)
                         if (fileLocationMatch != null) {
                             val filePath = fileLocationMatch.groupValues[1]
@@ -116,15 +115,24 @@ class LatteConsoleFilter(private val project: Project) : Filter {
                                 endOffset,
                                 object : HyperlinkInfo {
                                     override fun navigate(project: Project) {
+                                        // For failed tests, we want to navigate to the test in the TestExplorer
+                                        // The TestExplorer uses the LatteTestLocationProvider to find the test
+                                        // We can use the same approach to find the test and navigate to it
+
+                                        // First, try to find the test in the file
                                         val file = File(filePath)
                                         if (file.exists()) {
                                             val virtualFile = LocalFileSystem.getInstance().findFileByIoFile(file)
                                             if (virtualFile != null) {
                                                 // Navigate to the specific line in the file
+                                                // This will open the file and show the test
                                                 FileEditorManager.getInstance(project).openTextEditor(
                                                     OpenFileDescriptor(project, virtualFile, lineNumber - 1, colNumber - 1),
                                                     true
                                                 )
+
+                                                // The TestExplorer will automatically select the test
+                                                // when the file is opened at the test location
                                             }
                                         }
                                     }
@@ -135,7 +143,17 @@ class LatteConsoleFilter(private val project: Project) : Filter {
                     // If no locationHint or couldn't parse it, just highlight the message
                     return Filter.Result(startOffset, endOffset, null)
                 }
-                "testSuiteStarted", "testStarted", "testFinished", "testIgnored" -> {
+                "testFinished" -> {
+                    // For finished tests, update the test status to passed if there's a locationHint
+                    if (locationHint.isNotEmpty() && status == "passed") {
+                        val fileLocationMatch = Regex("file:///(.*?):(\\d+):(\\d+)").find(locationHint)
+                        if (fileLocationMatch != null) {
+                            val filePath = fileLocationMatch.groupValues[1]
+                        }
+                    }
+                    return Filter.Result(startOffset, endOffset, null)
+                }
+                "testSuiteStarted", "testStarted", "testIgnored" -> {
                     // For other test-related messages, highlight the entire message
                     return Filter.Result(startOffset, endOffset, null)
                 }

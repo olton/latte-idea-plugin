@@ -46,8 +46,8 @@
                 implementation="ua.com.pimenov.latte.runs.LatteRunConfigurationType"/>
 
         <!-- Зареєструймо наш RunLineMarkerContributor -->
-        <runLineMarkerContributor language="JavaScript" implementationClass="ua.com.pimenov.latte.markers.JsTestRunLineMarkerContributor"/>
-        <runLineMarkerContributor language="TypeScript" implementationClass="ua.com.pimenov.latte.markers.JsTestRunLineMarkerContributor"/>
+        <runLineMarkerContributor language="JavaScript" implementationClass="ua.com.pimenov.latte.markers.LatteTestRunLineMarkerContributor"/>
+        <runLineMarkerContributor language="TypeScript" implementationClass="ua.com.pimenov.latte.markers.LatteTestRunLineMarkerContributor"/>
 
         <!-- Реєстрація RunConfigurationProducer -->
         <runConfigurationProducer

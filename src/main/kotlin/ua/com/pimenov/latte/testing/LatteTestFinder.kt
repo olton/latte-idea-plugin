@@ -1,10 +1,10 @@
 package ua.com.pimenov.latte.testing
 
-import com.intellij.codeInsight.navigation.LOG
-import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.testIntegration.TestFinder
+import ua.com.pimenov.latte.utils.isTestFile
 
 class LatteTestFinder : TestFinder {
     override fun findSourceElement(element: PsiElement): PsiElement? {
@@ -24,7 +24,7 @@ class LatteTestFinder : TestFinder {
     override fun isTest(element: PsiElement): Boolean {
         if (element is PsiFile) {
             val latteTestFramework = LatteTestFramework()
-            return latteTestFramework.isTestFile(element)
+            return isTestFile(element as VirtualFile)
         }
         return false
     }

@@ -12,20 +12,18 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import ua.com.pimenov.latte.Latte
 import ua.com.pimenov.latte.runs.LatteRunConfigurationType
 import ua.com.pimenov.latte.runs.ScopeType
+import ua.com.pimenov.latte.utils.isTestFile
 
 /**
  * Лінійний маркер для запуску JavaScript тестів через іконки в gutter-і редактора.
  * Використовує новий RunLineMarkerContributor API для уникнення дублювання маркерів.
  */
-class JsTestRunLineMarkerContributor : RunLineMarkerContributor() {
+class LatteTestRunLineMarkerContributor : RunLineMarkerContributor() {
 
     companion object {
-        val TEST_FILE_EXTENSIONS = setOf("test.js", "test.jsx", "test.ts", "test.tsx",
-            "spec.js", "spec.jsx", "spec.ts", "spec.tsx")
         val TEST_FUNCTION_NAMES = setOf("describe", "suite", "it", "test")
 
         // Іконки для різних типів тестів
@@ -40,7 +38,8 @@ class JsTestRunLineMarkerContributor : RunLineMarkerContributor() {
      */
     override fun getInfo(element: PsiElement): Info? {
         // Перевіряємо, чи файл є тестовим
-        if (!isTestFile(element.containingFile)) {
+        val virtualFile = element.containingFile.virtualFile ?: return null
+        if (!isTestFile(virtualFile)) {
             return null
         }
 
@@ -105,14 +104,6 @@ class JsTestRunLineMarkerContributor : RunLineMarkerContributor() {
             current = current.parent
         }
         return null
-    }
-
-    /**
-     * Перевіряє чи файл є тестовим за розширенням
-     */
-    private fun isTestFile(file: PsiFile): Boolean {
-        val fileName = file.name
-        return TEST_FILE_EXTENSIONS.any { fileName.endsWith(it) }
     }
 
     /**
@@ -213,7 +204,7 @@ class JsTestRunLineMarkerContributor : RunLineMarkerContributor() {
             }
 
             config.latteOptions = "--dom"
-            
+
             // Додаємо NODE_OPTIONS=--import tsx для TypeScript файлів
             if (isTypeScriptFile) {
                 // Отримуємо поточні змінні оточення або створюємо нову мапу

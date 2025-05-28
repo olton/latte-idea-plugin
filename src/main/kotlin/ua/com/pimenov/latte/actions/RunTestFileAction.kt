@@ -10,8 +10,8 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import ua.com.pimenov.latte.Latte
-import ua.com.pimenov.latte.data.TEST_FILE_EXTENSIONS
-import ua.com.pimenov.latte.markers.JsTestRunLineMarkerContributor
+import ua.com.pimenov.latte.utils.isTestFile
+import ua.com.pimenov.latte.markers.LatteTestRunLineMarkerContributor
 import ua.com.pimenov.latte.runs.LatteRunConfigurationType
 import ua.com.pimenov.latte.runs.ScopeType
 import ua.com.pimenov.latte.utils.NodeJS
@@ -21,7 +21,7 @@ class RunTestFileAction : AnAction() {
     init {
         templatePresentation.text = Latte.message("latte.action.run.test.file")
         templatePresentation.description = Latte.message("latte.action.run.test.file.description")
-        templatePresentation.icon = JsTestRunLineMarkerContributor.RUN_FILE_ICON
+        templatePresentation.icon = LatteTestRunLineMarkerContributor.RUN_FILE_ICON
     }
 
     override fun actionPerformed(e: AnActionEvent) {
@@ -49,11 +49,6 @@ class RunTestFileAction : AnAction() {
 
     override fun getActionUpdateThread(): ActionUpdateThread {
         return ActionUpdateThread.BGT
-    }
-
-    private fun isTestFile(file: VirtualFile): Boolean {
-        val fileName = file.name
-        return TEST_FILE_EXTENSIONS.any { fileName.endsWith(it) }
     }
 
     private fun executeTestFile(project: Project, file: VirtualFile) {

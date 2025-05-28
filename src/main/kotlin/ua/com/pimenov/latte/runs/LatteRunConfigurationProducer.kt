@@ -4,17 +4,10 @@ import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.actions.LazyRunConfigurationProducer
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.openapi.util.Ref
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
-import ua.com.pimenov.latte.data.TEST_FILE_EXTENSIONS
+import ua.com.pimenov.latte.utils.isTestFile
 
 class JsTestRunConfigurationProducer : LazyRunConfigurationProducer<LatteRunConfiguration>() {
-
-    private fun isTestFile(file: VirtualFile): Boolean {
-        val fileName = file.name
-        return TEST_FILE_EXTENSIONS.any { fileName.endsWith(it) }
-    }
-
     override fun getConfigurationFactory(): ConfigurationFactory {
         return LatteRunConfigurationType.getInstance().configurationFactories.first()
     }
