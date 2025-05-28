@@ -43,7 +43,7 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <configurationType
-                implementation="ua.com.pimenov.latte.runs.RunConfigurationType"/>
+                implementation="ua.com.pimenov.latte.runs.LatteRunConfigurationType"/>
 
         <!-- Зареєструймо наш RunLineMarkerContributor -->
         <runLineMarkerContributor language="JavaScript" implementationClass="ua.com.pimenov.latte.markers.JsTestRunLineMarkerContributor"/>
@@ -57,8 +57,8 @@
         <consoleFilterProvider implementation="ua.com.pimenov.latte.testing.LatteConsoleFilterProvider"/>
         <lang.testFramework language="JavaScript" implementationClass="ua.com.pimenov.latte.testing.LatteTestFramework"/>
         <lang.testFramework language="TypeScript" implementationClass="ua.com.pimenov.latte.testing.LatteTestFramework"/>
-        <testFinder implementation="ua.com.pimenov.latte.testing.LatteTestLocationProvider"/>
-
+        <testFinder implementation="ua.com.pimenov.latte.testing.LatteTestFinder"/>
+        <smTestLocator implementation="ua.com.pimenov.latte.testing.LatteTestLocationProvider" />
     </extensions>
 
     <actions>

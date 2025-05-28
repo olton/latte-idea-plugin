@@ -3,7 +3,7 @@ package ua.com.pimenov.latte.runs
 import com.intellij.execution.configurations.RunConfigurationOptions
 import com.intellij.openapi.components.StoredProperty
 
-class RunConfigurationOptions : RunConfigurationOptions() {
+class LatteRunConfigurationOptions : RunConfigurationOptions() {
     private var myConfigFile: StoredProperty<String?> = string().provideDelegate(this, "configFile")
     private var myNodeInterpreter: StoredProperty<String?> = string().provideDelegate(this, "nodeInterpreter")
     private var myNodeOptions: StoredProperty<String?> = string().provideDelegate(this, "nodeOptions")

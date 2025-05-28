@@ -8,7 +8,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import ua.com.pimenov.latte.data.TEST_FILE_EXTENSIONS
 
-class JsTestRunConfigurationProducer : LazyRunConfigurationProducer<RunConfiguration>() {
+class JsTestRunConfigurationProducer : LazyRunConfigurationProducer<LatteRunConfiguration>() {
 
     private fun isTestFile(file: VirtualFile): Boolean {
         val fileName = file.name
@@ -16,11 +16,11 @@ class JsTestRunConfigurationProducer : LazyRunConfigurationProducer<RunConfigura
     }
 
     override fun getConfigurationFactory(): ConfigurationFactory {
-        return RunConfigurationType.getInstance().configurationFactories.first()
+        return LatteRunConfigurationType.getInstance().configurationFactories.first()
     }
 
     override fun setupConfigurationFromContext(
-        configuration: RunConfiguration,
+        configuration: LatteRunConfiguration,
         context: ConfigurationContext,
         sourceElement: Ref<PsiElement>
     ): Boolean {
@@ -39,7 +39,7 @@ class JsTestRunConfigurationProducer : LazyRunConfigurationProducer<RunConfigura
     }
 
     override fun isConfigurationFromContext(
-        configuration: RunConfiguration,
+        configuration: LatteRunConfiguration,
         context: ConfigurationContext
     ): Boolean {
         val location = context.psiLocation ?: return false

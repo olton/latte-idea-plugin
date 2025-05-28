@@ -12,8 +12,9 @@ import com.intellij.openapi.vfs.VirtualFile
 import ua.com.pimenov.latte.Latte
 import ua.com.pimenov.latte.data.TEST_FILE_EXTENSIONS
 import ua.com.pimenov.latte.markers.JsTestRunLineMarkerContributor
-import ua.com.pimenov.latte.runs.RunConfigurationType
+import ua.com.pimenov.latte.runs.LatteRunConfigurationType
 import ua.com.pimenov.latte.runs.ScopeType
+import ua.com.pimenov.latte.utils.NodeJS
 
 class RunTestFileAction : AnAction() {
     // Встановлюємо іконку та текст для дії
@@ -62,18 +63,20 @@ class RunTestFileAction : AnAction() {
         val runManager = RunManager.getInstance(project)
 
         // Створюємо нову конфігурацію запуску
-        val configurationType = RunConfigurationType.getInstance()
+        val configurationType = LatteRunConfigurationType.getInstance()
         val factory = configurationType.configurationFactories.firstOrNull() ?: return
         val settings = runManager.createConfiguration(runName, factory)
+
 
         // Перевіряємо чи це TypeScript файл для додавання NODE_OPTIONS
         val isTypeScriptFile = file.path.endsWith(".ts") || file.path.endsWith(".tsx")
 
         // Налаштовуємо параметри конфігурації
-        (settings.configuration as? ua.com.pimenov.latte.runs.RunConfiguration)?.let { config ->
+        (settings.configuration as? ua.com.pimenov.latte.runs.LatteRunConfiguration)?.let { config ->
             config.testScope = ScopeType.FILE.id
             config.testsFile = file.path
             config.latteOptions = "--dom"
+            config.nodeInterpreter = NodeJS.getNode(project)
 
             // Додаємо NODE_OPTIONS=--import tsx для TypeScript файлів
             if (isTypeScriptFile) {

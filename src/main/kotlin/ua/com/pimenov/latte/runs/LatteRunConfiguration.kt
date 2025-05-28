@@ -19,15 +19,16 @@ import java.util.concurrent.ExecutionException
 import java.io.File
 import java.nio.charset.Charset
 import java.nio.file.Paths
+import ua.com.pimenov.latte.utils.NodeJS
 
-class RunConfiguration(
+class LatteRunConfiguration(
     project: Project,
     factory: ConfigurationFactory?,
     name: String?
-) : RunConfigurationBase<RunConfigurationOptions?>(project, factory, name) {
+) : RunConfigurationBase<LatteRunConfigurationOptions?>(project, factory, name) {
 
-    override fun getOptions(): RunConfigurationOptions {
-        return super.getOptions() as RunConfigurationOptions
+    override fun getOptions(): LatteRunConfigurationOptions {
+        return super.getOptions() as LatteRunConfigurationOptions
     }
 
     var configFile: String?
@@ -39,7 +40,7 @@ class RunConfiguration(
     var nodeInterpreter: String?
         get() = options.nodeInterpreter
         set(value) {
-            options.nodeInterpreter = value ?: "node"
+            options.nodeInterpreter = value ?: NodeJS.getNodePath(project)
         }
 
     var nodeOptions: String?
@@ -210,7 +211,7 @@ class RunConfiguration(
                 val lattePath = (lattePath?: "").isEmpty().let { if (it) {Paths.get(project.basePath!!, "node_modules", "@olton", "latte").toString()} else {lattePath!!} }
                 val latte = "$lattePath/cli/latte.js"
 
-                val nodeExecutable = nodeInterpreter!!.ifEmpty { "node" }
+                val nodeExecutable = nodeInterpreter!!.ifEmpty { NodeJS.getNode(project) }
                 val commandLine = GeneralCommandLine()
                 commandLine.exePath = nodeExecutable
 
@@ -251,7 +252,7 @@ class RunConfiguration(
             override fun createConsole(executor: Executor): ConsoleView {
                 return ua.com.pimenov.latte.testing.LatteTestConsoleProperties.createConsole(
                     "Latte",
-                    this@RunConfiguration,
+                    this@LatteRunConfiguration,
                     executor
                 )
             }

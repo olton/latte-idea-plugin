@@ -14,7 +14,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import ua.com.pimenov.latte.Latte
-import ua.com.pimenov.latte.runs.RunConfigurationType
+import ua.com.pimenov.latte.runs.LatteRunConfigurationType
 import ua.com.pimenov.latte.runs.ScopeType
 
 /**
@@ -187,7 +187,7 @@ class JsTestRunLineMarkerContributor : RunLineMarkerContributor() {
         val runManager = RunManager.getInstance(project)
 
         // Створюємо нову конфігурацію запуску
-        val configurationType = RunConfigurationType.getInstance()
+        val configurationType = LatteRunConfigurationType.getInstance()
         val factory = configurationType.configurationFactories.firstOrNull() ?: return
         val settings = runManager.createConfiguration(runName, factory)
 
@@ -195,7 +195,7 @@ class JsTestRunLineMarkerContributor : RunLineMarkerContributor() {
         val isTypeScriptFile = file.endsWith(".ts") || file.endsWith(".tsx") || file.endsWith(".jsx")
 
         // Налаштовуємо параметри конфігурації
-        (settings.configuration as? ua.com.pimenov.latte.runs.RunConfiguration)?.let { config ->
+        (settings.configuration as? ua.com.pimenov.latte.runs.LatteRunConfiguration)?.let { config ->
             when (functionType) {
                 "describe", "suite" -> {
                     config.testScope = ScopeType.SUITE.id

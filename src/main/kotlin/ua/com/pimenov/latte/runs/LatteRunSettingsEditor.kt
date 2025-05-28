@@ -10,7 +10,6 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
-import com.intellij.ui.JBColor
 import com.intellij.util.ui.FormBuilder
 import org.jetbrains.annotations.NotNull
 import java.awt.FlowLayout
@@ -25,12 +24,7 @@ import java.awt.Cursor
 import javax.swing.JButton
 import java.awt.Dimension
 import com.intellij.ui.components.JBTextField
-import javax.swing.BorderFactory
-import javax.swing.JCheckBox
-import javax.swing.border.TitledBorder
-import com.intellij.ui.RoundedLineBorder
-
-
+import ua.com.pimenov.latte.utils.NodeJS
 
 enum class ScopeType(val id: String) {
     ALL("all"),
@@ -47,7 +41,7 @@ enum class ScopeType(val id: String) {
     }
 }
 
-class RunSettingsEditor(private val project: Project) : SettingsEditor<RunConfiguration>() {
+class RunSettingsEditor(private val project: Project) : SettingsEditor<LatteRunConfiguration>() {
     private val topPanel: JPanel
 
     private val actionPanel: JPanel
@@ -117,6 +111,12 @@ class RunSettingsEditor(private val project: Project) : SettingsEditor<RunConfig
             fileDescriptorConf
         )
 
+        // Ініціалізація nodeInterpreter значенням за замовчуванням
+        val nodeJsInterpreter = NodeJS.getNodeJsInterpreter(project)
+        if (nodeJsInterpreter != null) {
+            nodeInterpreter.interpreterRef = NodeJS.getNodeJsInterpreter(project)?.toRef()
+                ?: NodeJsInterpreterRef.createProjectRef()
+        }
         // Node options
         nodeOptions.emptyText.text = Latte.message("latte.settings.node.options.placeholder")
 
@@ -292,7 +292,7 @@ class RunSettingsEditor(private val project: Project) : SettingsEditor<RunConfig
         scopeTestPanel.isVisible = scope == ScopeType.TEST
     }
 
-    override fun resetEditorFrom(conf: RunConfiguration) {
+    override fun resetEditorFrom(conf: LatteRunConfiguration) {
         configFile.text = conf.configFile ?: ""
         nodeInterpreter.interpreterRef = NodeJsInterpreterRef.create(conf.nodeInterpreter)
         nodeOptions.text = conf.nodeOptions
@@ -319,7 +319,7 @@ class RunSettingsEditor(private val project: Project) : SettingsEditor<RunConfig
         scopeTestName.text = conf.testName ?: ""
     }
 
-    override fun applyEditorTo(@NotNull conf: RunConfiguration) {
+    override fun applyEditorTo(@NotNull conf: LatteRunConfiguration) {
         conf.configFile = configFile.text
         conf.nodeInterpreter = nodeInterpreter.interpreter?.referenceName
         conf.nodeOptions = nodeOptions.text

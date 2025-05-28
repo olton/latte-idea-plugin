@@ -4,7 +4,7 @@ import com.intellij.execution.configurations.ConfigurationType
 import com.intellij.execution.configurations.ConfigurationTypeBase
 import ua.com.pimenov.latte.utils.LatteIcons
 
-class RunConfigurationType: ConfigurationTypeBase(
+class LatteRunConfigurationType: ConfigurationTypeBase(
     ID,
     "Latte Test Runner",
     "Run tests with Latte",
@@ -14,17 +14,17 @@ class RunConfigurationType: ConfigurationTypeBase(
         addFactory(createFactory())
     }
 
-    private fun createFactory(): RunConfigurationFactory {
-        return RunConfigurationFactory(this)
+    private fun createFactory(): LatteRunConfigurationFactory {
+        return LatteRunConfigurationFactory(this)
     }
 
     companion object {
         const val ID: String = "LatteRunConfiguration"
 
         // Метод getInstance для отримання зареєстрованого розширення
-        fun getInstance(): RunConfigurationType {
+        fun getInstance(): LatteRunConfigurationType {
             return ConfigurationType.CONFIGURATION_TYPE_EP.extensionList
-                .find { it.id == ID } as RunConfigurationType
+                .find { it.id == ID } as LatteRunConfigurationType
         }
     }
 }
