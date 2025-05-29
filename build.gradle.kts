@@ -32,10 +32,10 @@ intellijPlatform {
     }
 
     changeNotes = """
-        <h2>New Features</h2>
+        <h2>Fixes</h2>
         <ul>
-            <li>Added support new latte cli argument <b>--dom-env</b></li>
-            <li>Added integration with <b>IDE TestExplorer</b></li>
+            <li>Fixed issue #1</li>
+            <li>General improves</li>
         </ul>
     """.trimIndent()
   }
