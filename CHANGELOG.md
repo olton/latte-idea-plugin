@@ -1,26 +1,44 @@
 # Changelog
 
-## 0.5.0
-- Added support for IntelliJ IDEA Test Explorer
-- Added console filter for test output to create hyperlinks for file paths
+## [Unreleased]
 
-## 0.4.0
-- Add support new latte cli argument `--dom-env`
+## [0.4.2]
 
-## 0.3.1
-- Add the current file name to the context action title
-- Fixed Latte Producer for `avarice`, IDE no longer uses Latte Producer to create a launch configuration for regular files
+## [0.4.1]
+### Added
+- Support for IntelliJ IDEA Test Explorer
+- Console filter for test output to create hyperlinks for file paths
 
-## 0.3.0
-- Added Context menu action to execute a test file
-- Improved performance and stability
+## [0.4.0]
+### Added
+- Support new latte cli argument `--dom-env`
+
+## [0.3.1]
+### Added
+- The current file name to the context action title
+
+### Fixed
+- Latte Producer for `avarice`, IDE no longer uses Latte Producer to create a launch configuration for regular files
+
+## [0.3.0]
+### Added
+- Context menu action to execute a test file
 - When you run test with gutter button or context action `--dom` option will be added automatically
 - When you run TypeScript test env `NODE_OPTIONS=--import tsx` will be added automatically
-- Fixed double buttons on gutter
 
-## 0.2.0
-- Added support for new latte cli arguments
+### Changed
 - Improved performance and stability
 
-## 0.1.0 
+### Fixed
+- Fixed double buttons on gutter
+
+## [0.2.0]
+### Added
+- Support for new latte cli arguments
+
+### Changed
+- Improved performance and stability
+
+## [0.1.0]
+### Added
 - Initial release of the plugin.

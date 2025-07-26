@@ -5,7 +5,7 @@ plugins {
   id("org.jetbrains.changelog") version "2.2.1"
 }
 
-group = providers.gradleProperty("pluginGroup").get()
+group = providers.gradleProperty("pluginGroup").get() 
 version = providers.gradleProperty("pluginVersion").get()
 
 repositories {
@@ -25,19 +25,28 @@ dependencies {
   }
 }
 
+changelog {
+  version.set(providers.gradleProperty("pluginVersion"))
+  path.set(file("CHANGELOG.md").canonicalPath)
+  header.set(provider { "[${version.get()}]" })
+  headerParserRegex.set("""(\d+\.\d+\.\d+)""".toRegex())
+  itemPrefix.set("-")
+  keepUnreleasedSection.set(true)
+  unreleasedTerm.set("[Unreleased]")
+  groups.set(listOf("Added", "Changed", "Deprecated", "Removed", "Fixed", "Security"))
+}
+
 intellijPlatform {
   pluginConfiguration {
     ideaVersion {
       sinceBuild = "251"
     }
 
-    changeNotes = """
-        <h2>Fixes</h2>
-        <ul>
-            <li>Fixed issue #1</li>
-            <li>General improves</li>
-        </ul>
-    """.trimIndent()
+    changeNotes.set(provider {
+      changelog.renderItem(
+        changelog.getOrNull(providers.gradleProperty("pluginVersion").get()) ?: changelog.getUnreleased()
+      )
+    })
   }
 
   signing {
