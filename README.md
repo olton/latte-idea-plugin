@@ -1,8 +1,21 @@
 # Latte Test Runner 
 
-Welcome to `Latte Test Runner` - plugin for IntelliJ IDEA IDE's! This plugin provides integration for the [Latte Testing Framework](https://latte.org.ua).
+<!-- Plugin description -->
+Latte Test Runner is a plugin for IntelliJ-based IDEs that integrates the [Latte Testing Framework](https://latte.org.ua). It provides essential features for testing JavaScript and TypeScript applications. Requires Latte Testing Framework to be installed separately.
+<!-- Plugin description end -->
 
+### Features:
+- Run test configurations directly from the IDE
+- Execute tests from code editor with gutter icons
+- View test results in Test Explorer window
+- Quick navigation to test failures
+- Support for React components testing
+- Built-in DOM testing capabilities
+- Headless browser testing integration
+
+:::tip
 Latte (an abbreviation from `laconic testing`) is a testing framework designed for testing applications written in JavaScript and TypeScript, React Components, HTML elements and entire sites.
+:::
 
 ### With `Latte`, you can test:
 

@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-## [0.4.2]
+## [0.4.2] - 2025-08-05
+### Added
+- Support for new IntelliJ IDEA
 
 ## [0.4.1]
 ### Added
