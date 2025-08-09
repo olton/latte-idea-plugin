@@ -4,7 +4,7 @@ import org.jetbrains.changelog.markdownToHTML
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "2.2.0"
-    id("org.jetbrains.intellij.platform") version "2.7.0"
+    id("org.jetbrains.intellij.platform") version "2.7.1"
     id("org.jetbrains.changelog") version "2.3.0"
 }
 
@@ -25,8 +25,16 @@ dependencies {
     implementation("org.jetbrains:marketplace-zip-signer:0.1.34")
 
     intellijPlatform {
-        webstorm("2025.1.4")
-        bundledPlugin("JavaScript")
+        create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
+
+        // Plugin Dependencies. Uses `platformBundledPlugins` property from the gradle.properties file for bundled IntelliJ Platform plugins.
+        bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
+
+        // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file for plugin from JetBrains Marketplace.
+        plugins(providers.gradleProperty("platformPlugins").map { it.split(',') })
+
+        // Module Dependencies. Uses `platformBundledModules` property from the gradle.properties file for bundled IntelliJ Platform modules.
+        bundledModules(providers.gradleProperty("platformBundledModules").map { it.split(',') })
     }
 }
 
@@ -65,12 +73,6 @@ intellijPlatform {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
             untilBuild = providers.gradleProperty("pluginUntilBuild")
         }
-
-        changeNotes.set(provider {
-            changelog.renderItem(
-                changelog.getOrNull(providers.gradleProperty("pluginVersion").get()) ?: changelog.getUnreleased()
-            )
-        })
     }
 
     signing {
