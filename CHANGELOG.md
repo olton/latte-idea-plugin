@@ -2,9 +2,10 @@
 
 ## [Unreleased]
 
-## [0.4.3] - 2025-08-27
+## [0.5.0] - 2025-08-27
 ### Fixed
 - Fixed a bug with interacting with latte cli
+- Fixed teamcity protocol messages parsing
 
 ## [0.4.2] - 2025-08-05
 ### Added
