@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.4.3] - 2025-08-27
+### Fixed
+- Fixed a bug with interacting with latte cli
+
 ## [0.4.2] - 2025-08-05
 ### Added
 - Support for new IntelliJ IDEA
