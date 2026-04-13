@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-04-13
+### Fixed
+- Add support for 2026.* IDE.
+
 ## [0.5.0] - 2025-08-27
 ### Fixed
 - Fixed a bug with interacting with latte cli

@@ -1,5 +1,7 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
+import org.gradle.process.CommandLineArgumentProvider
+import org.jetbrains.intellij.platform.gradle.tasks.RunIdeTask
 
 plugins {
     id("java")
@@ -99,4 +101,26 @@ changelog {
 
 kotlin {
     jvmToolchain(21)
+}
+
+// Workaround for WebStorm 2026.1 (build 261): searchable options task fails to start IDE bootstrap class.
+tasks.named("buildSearchableOptions") {
+    enabled = false
+}
+
+// Workaround for Gradle pathing-jar + PathClassLoader conflict on WS-2026.1:
+// otherwise `runIde` fails with `ClassNotFoundException: com.intellij.idea.Main`.
+tasks.withType<RunIdeTask>().configureEach {
+    doFirst {
+        systemProperties.remove("java.system.class.loader")
+
+        // WebStorm 2026.1 contributes this property from VM options/provider args as well.
+        val providers = jvmArgumentProviders.toList()
+        jvmArgumentProviders.clear()
+        providers.forEach { provider ->
+            jvmArgumentProviders.add(CommandLineArgumentProvider {
+                provider.asArguments().filterNot { it.startsWith("-Djava.system.class.loader=") }
+            })
+        }
+    }
 }

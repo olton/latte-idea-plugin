@@ -2,6 +2,7 @@ package ua.com.pimenov.latte.runs
 
 import com.beust.klaxon.Parser
 import com.beust.klaxon.JsonObject
+import com.intellij.execution.ExecutionException
 import com.intellij.execution.Executor
 import com.intellij.execution.configurations.*
 import com.intellij.execution.configurations.ConfigurationFactory
@@ -15,8 +16,8 @@ import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import ua.com.pimenov.latte.data.LatteConfig
 import ua.com.pimenov.latte.utils.parseArgs
-import java.util.concurrent.ExecutionException
 import java.io.File
+import java.io.IOException
 import java.nio.charset.Charset
 import java.nio.file.Paths
 import ua.com.pimenov.latte.utils.NodeJS
@@ -120,15 +121,38 @@ class LatteRunConfiguration(
     }
 
     private fun getLatteConfig(): Array<String>? {
-        var configFileContent: String
         val latteConfig = LatteConfig()
+        val configPath = configFile?.trim().orEmpty()
 
-        if (configFile != null && File(configFile!!).exists()) {
-            configFileContent = File(configFile!!).readText()
-            val sb: StringBuilder = StringBuilder(configFileContent)
-            val json: JsonObject = Parser.default().parse(sb) as JsonObject
-            json.entries.forEach {
-                latteConfig[it.key] = it.value
+        if (configPath.isNotEmpty()) {
+            val config = File(configPath).let { file ->
+                if (file.isAbsolute) file else File(workingDirectory ?: project.basePath ?: "", configPath)
+            }
+
+            if (!config.exists()) {
+                throw ExecutionException("Latte config file not found: ${config.absolutePath}")
+            }
+            if (!config.isFile) {
+                throw ExecutionException("Latte config path is not a file: ${config.absolutePath}")
+            }
+            if (!config.canRead()) {
+                throw ExecutionException("Latte config file is not readable: ${config.absolutePath}")
+            }
+
+            val configFileContent = try {
+                config.readText()
+            } catch (e: IOException) {
+                throw ExecutionException("Failed to read Latte config file: ${config.absolutePath}", e)
+            }
+
+            try {
+                val sb: StringBuilder = StringBuilder(configFileContent)
+                val json: JsonObject = Parser.default().parse(sb) as JsonObject
+                json.entries.forEach {
+                    latteConfig[it.key] = it.value
+                }
+            } catch (e: Exception) {
+                throw ExecutionException("Latte config file contains invalid JSON: ${config.absolutePath}", e)
             }
         }
 
